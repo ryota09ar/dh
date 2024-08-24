@@ -11,8 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string("email")->unique();
+        Schema::create('shifts', function (Blueprint $table) {
+            $table->date("shift_date");
+            $table->foreignId("shift_id");
+            $table->timestamps();
         });
     }
 
@@ -21,8 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn("email");
-        });
+        Schema::dropIfExists('shift');
     }
 };

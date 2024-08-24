@@ -11,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string("email")->unique();
-            $table->string("password");
-            $table->rememberToken();
+        Schema::create('shift_contents', function (Blueprint $table) {
+            $table->id("shift_id");
+            $table->string("shift_place");
+            $table->char('shift_time', 5);
             $table->timestamps();
         });
     }
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('shift_content');
     }
 };

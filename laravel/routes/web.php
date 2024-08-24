@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+//create & edit user
 Route::get("users/create", [UserController::class, "create"])->name("user.create");
 Route::post("users/create/", [UserController::class, "store"])->name("user.store");
 Route::get("users/create/complete", [UserController::class, "createComplete"])->name("user.createComplete");
@@ -22,6 +24,12 @@ Route::get("users/update/complete", [UserController::class, "updateComplete"])->
 Route::get("users/edit", [UserController::class, "edit"])->name("user.edit");
 Route::post("users/edit/", [UserController::class, "update"])->name("user.update");
 
+//necessary login
+Route::get("home", [UserController::class, "home"])->name("user.home");
+Route::get("shifts/create", [ShiftController::class, "create"])->name("shift.create");
+Route::post("shifts/create/", [ShiftController::class, "store"])->name("shift.store");
+
+//login
 Route::get("login", [LoginController::class, "show"])->name("login");
 Route::post("login/", [LoginController::class, "login"])->name("login.home");
 Route::get("home", [UserController::class, "home"])->name("user.home");
