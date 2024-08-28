@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('shift_contents', function (Blueprint $table) {
+        Schema::create('look_for_shifts', function (Blueprint $table) {
             $table->id();
-            $table->string("place");
-            $table->char('time', 5);
+            $table->date('date');
+            $table->foreignId("shift_content_id");
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('shift_content');
+        Schema::dropIfExists('look_for_shifts');
     }
 };

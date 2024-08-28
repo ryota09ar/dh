@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ShiftAdminController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +29,17 @@ Route::post("users/edit/", [UserController::class, "update"])->name("user.update
 Route::get("home", [UserController::class, "home"])->name("user.home");
 Route::get("shifts/create", [ShiftController::class, "create"])->name("shift.create");
 Route::post("shifts/create/", [ShiftController::class, "store"])->name("shift.store");
+
+//admin
+Route::get("admin/menu", [ShiftAdminController::class, "show"])->name("admin.menu");
+Route::get("admin/shifts/place", [ShiftAdminController::class, "placeIndex"])->name("shiftPlace.index");
+Route::get("admin/shifts/place/create", [ShiftAdminController::class, "placeCreate"])->name("shiftPlace.create");
+Route::post("admin/shifts/place/", [ShiftAdminController::class, "placeStore"])->name("shiftPlace.store");
+Route::get("admin/shifts/place/{id}", [ShiftAdminController::class, "placeEdit"])->name("shiftPlace.edit");
+Route::post("admin/shifts/place/{id}", [ShiftAdminController::class, "placeUpdate"])->name("shiftPlace.update");
+Route::get("admin/lookForYearMonth", [ShiftAdminController::class, "lookForYearMonth"])->name("shiftLookFor.yearMonth");
+Route::get("admin/shifts/lookFor", [ShiftAdminController::class, "lookForCreate"])->name("shiftLookFor.create");
+Route::post("admin/shifts/lookFor/", [ShiftAdminController::class, "lookForStore"])->name("shiftLookFor.store");
 
 //login
 Route::get("login", [LoginController::class, "show"])->name("login");

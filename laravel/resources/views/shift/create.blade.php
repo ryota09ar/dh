@@ -16,7 +16,7 @@
                 <option value={{$i}}>{{$i}}</option>
             @endfor
         </select>
-        <label for="month">月</label>
+        <label for="year">年</label>
 
         <select id="month" name="month">
         @for($i=1;$i<=12;$i++)
@@ -28,10 +28,10 @@
         <label for="shift">シフト選択</label>
         @for($k=1;$k<=31;$k++)
             <p>{{$k}}日</p>
-            <select id="shift" name="shift_{{$k}}">
+            <select id="shift" name="{{"shift_content_".$k}}">
                 <option value=0>なし</option>
                 @foreach($shift_contents as $shift_content)
-                    <option value={{$shift_content->shift_id}}>{{$shift_content->shift_place.$shift_content->shift_time}}</option>
+                    <option value={{$shift_content->id}}>{{$shift_content->place.$shift_content->time}}</option>
                 @endforeach
             </select>
         @endfor

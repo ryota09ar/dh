@@ -14,13 +14,13 @@ class ShiftContentsTableSeeder extends Seeder
     public function run(): void
     {
         DB::table('shift_contents')->insert([
-            "shift_place"=>"所沢駅",
-            "shift_time"=>"09:30",
+            "place"=>"所沢駅",
+            "time"=>"09:30",
         ]);
 
         DB::table('shift_contents')->insert([
-            "shift_place"=>"武蔵藤沢",
-            "shift_time"=>"07:30",
+            "place"=>"武蔵藤沢",
+            "time"=>"07:30",
         ]);
     }
 }

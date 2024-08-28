@@ -10,8 +10,15 @@ class ShiftContent extends Model
     use HasFactory;
 
     protected $fillable = [
-        "shift_id",
-        "shift_place",
-        "shift_time"
+        "place",
+        "time"
     ];
+
+    public function shift(){
+        return $this->hasMany(Shift::class);
+    }
+
+    public function lookUpForShift(){
+        return $this->hasMany(LookForShift::class);
+    }
 }

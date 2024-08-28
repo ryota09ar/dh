@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('shifts', function (Blueprint $table) {
             $table->date("shift_date");
-            $table->foreignId("shift_id");
+            $table->foreignId("shift_content_id");
             $table->timestamps();
         });
     }
