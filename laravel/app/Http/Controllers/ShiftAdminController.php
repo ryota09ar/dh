@@ -207,6 +207,7 @@ class ShiftAdminController extends Controller
         $newFileName = 'exported-file.xlsx';
         $writer = new Xlsx($spreadsheet);
         $writer->save(storage_path('app/public/' . $newFileName));
+        
         return response()->download(storage_path('app/public/' . $newFileName));
     }
 }
