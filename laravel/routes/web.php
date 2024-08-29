@@ -40,6 +40,7 @@ Route::post("admin/shifts/place/{id}", [ShiftAdminController::class, "placeUpdat
 Route::get("admin/lookForYearMonth", [ShiftAdminController::class, "lookForYearMonth"])->name("shiftLookFor.yearMonth");
 Route::get("admin/shifts/lookFor", [ShiftAdminController::class, "lookForCreate"])->name("shiftLookFor.create");
 Route::post("admin/shifts/lookFor/", [ShiftAdminController::class, "lookForStore"])->name("shiftLookFor.store");
+Route::post("admin/shifts/lookFor/xlsxOutput", [ShiftAdminController::class, "exportLookForShiftsToExcel"])->name("shiftLookFor.excel");
 
 //login
 Route::get("login", [LoginController::class, "show"])->name("login");
