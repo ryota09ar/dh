@@ -16,14 +16,14 @@
 
         <select id="hour" name="hour">
             @for($i=0;$i<=23;$i++)
-                <option value={{$i}}>{{str_pad($i, 2, '0', STR_PAD_LEFT)}}</option>
+                <option value={{$i}} {{ (str_pad($i, 2, '0', STR_PAD_LEFT)==substr($shift_content->time, 0, 2)) ? "selected":"" }}>{{str_pad($i, 2, '0', STR_PAD_LEFT)}}</option>
             @endfor
         </select>
         <label for="hour">時</label>
 
         <select id="minute" name="minute">
             @for($i=0;$i<12;$i++)
-                <option value={{$i*5}}>{{str_pad($i*5, 2, '0', STR_PAD_LEFT)}}</option>
+                <option value={{$i*5}} {{ (str_pad($i*5, 2, '0', STR_PAD_LEFT)==substr($shift_content->time, 3, 2)) ? "selected":"" }}>{{str_pad($i*5, 2, '0', STR_PAD_LEFT)}}</option>
             @endfor
         </select>
         <label for="minute">分</label>

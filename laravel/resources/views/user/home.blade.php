@@ -9,7 +9,8 @@
 </head>
 <body>
     <h1>メニュー</h1>
-    <a href="">シフト提出</a>
+    <h2>{{ \Illuminate\Support\Facades\Auth::user()->name }} さん</h2>
+    <a href="{{ route("shiftRequest.yearMonth") }}">シフト提出</a>
     <a href="">シフト確認</a>
     <a href="{{route("logout")}}">ログアウト</a>
 </body>

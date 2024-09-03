@@ -19,7 +19,12 @@ class ShiftContentsTableSeeder extends Seeder
         ]);
 
         DB::table('shift_contents')->insert([
-            "place"=>"武蔵藤沢",
+            "place"=>"武蔵藤沢駅",
+            "time"=>"07:30",
+        ]);
+
+        DB::table('shift_contents')->insert([
+            "place"=>"狭山ヶ丘駅",
             "time"=>"07:30",
         ]);
     }

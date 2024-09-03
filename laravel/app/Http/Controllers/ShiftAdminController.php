@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DecideShift;
 use App\Models\LookForShift;
+use App\Models\RequestShift;
 use App\Models\ShiftContent;
 use DateTime;
 use Exception;
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Color;
@@ -19,6 +20,7 @@ class ShiftAdminController extends Controller
         return view('admin.menu');
     }
 
+    //edit place
     public function placeIndex(){
         $shift_contents = ShiftContent::orderBy("place", "asc")->get();
         return view('admin.placeIndex', compact('shift_contents'));
@@ -64,6 +66,7 @@ class ShiftAdminController extends Controller
         return redirect()->route('shiftPlace.index');
     }
 
+    //look for shift
     public function lookForYearMonth(){
         return view('admin.lookForYearMonth');
     }
@@ -140,7 +143,7 @@ class ShiftAdminController extends Controller
 
         $daysOfWeek = $this->daysOfWeek($year, $month, $countOfDate);
 
-        $lookForShiftsLoaded=$this->lookForShiftsLoaded($countOfDate, $lookForShifts, $year, $month);
+        $lookForShiftsLoaded = $this->lookForShiftsLoaded($countOfDate, $lookForShifts, $year, $month);
 
         return view('admin.lookForCreate', compact('shift_contents', "year", "month", "lookForShiftsLoaded", "lookForShifts", "countOfDate", "daysOfWeek"));
     }
@@ -207,7 +210,66 @@ class ShiftAdminController extends Controller
         $newFileName = 'exported-file.xlsx';
         $writer = new Xlsx($spreadsheet);
         $writer->save(storage_path('app/public/' . $newFileName));
-        
+
         return response()->download(storage_path('app/public/' . $newFileName));
+    }
+
+    //decide shift
+    public function decideYearMonth(){
+        return view("admin.decideYearMonth");
+    }
+
+    public function lookForShiftIDsLoaded($countOfDate, $lookForShifts, $year, $month): array
+    {
+        $lookForShiftIdsLoaded=[];
+        for ($i=1;$i<=$countOfDate;$i++){
+            $lookForShiftIdsLoaded[$i]=[0,0,0,0];
+        }
+        for ($i=1;$i<=$countOfDate;$i++){
+            $pointer=0;
+            foreach ($lookForShifts as $lookForShift) {
+                if ($lookForShift->date == $year . "-" . str_pad($month, 2, "0", STR_PAD_LEFT) . "-" . str_pad($i, 2, "0", STR_PAD_LEFT)
+                    && !in_array($lookForShift->shift_content_id, $lookForShiftIdsLoaded[$i])) {
+                    $lookForShiftIdsLoaded[$i][$pointer++]=$lookForShift->id;
+                }
+            }
+        }
+        return $lookForShiftIdsLoaded;
+    }
+
+    public function decideCreate(Request $request){
+        $year = $request['year'];
+        $month = $request['month'];
+        $countOfDate = $this->countOfDate($year, $month);
+        $daysOfWeek = $this->daysOfWeek($year, $month, $countOfDate);
+        $decideShifts = DecideShift::whereYear('date',$year)->whereMonth('date',$month)->get();
+        $lookForShifts = LookForShift::whereYear('date',$year)->whereMonth('date',$month)->orderBy("shift_content_id", "asc")->get();
+        $lookForShiftIdsLoaded = $this->lookForShiftIdsLoaded($countOfDate, $lookForShifts, $year, $month);
+        $requestShiftsLoaded=[];
+        for ($i=1;$i<=$countOfDate;$i++){
+            $requestShiftsLoaded[$i]=RequestShift::whereYear("date", $year)->whereMonth('date', $month)->whereDay('date', $i)->orderBy("user_id", "asc")->get();
+        }
+
+        return view("admin.decideCreate", compact('year', 'month', 'countOfDate', 'daysOfWeek', "decideShifts","requestShiftsLoaded", "lookForShiftIdsLoaded"));
+    }
+
+    public function decideStore(Request $request){
+        $year = $request['year'];
+        $month = $request['month'];
+        $countOfDate = $this->countOfDate($year, $month);
+        DecideShift::whereYear("date", $year)->whereMonth("date", $month)->delete();
+        for ($i=1;$i<=$countOfDate;$i++){
+            foreach($request->input("decideShifts_$i", []) as $decideShiftId){
+                $decideShift=RequestShift::find($decideShiftId);
+                DecideShift::create([
+                    "user_id" => $decideShift->user_id,
+                    "date" => $decideShift->date,
+                    "place" => $decideShift->lookForShift->shiftContent->place,
+                    "time" => $decideShift->lookForShift->shiftContent->time,
+                ]);
+            }
+        }
+
+        return redirect()->route("admin.menu");
     }
 }

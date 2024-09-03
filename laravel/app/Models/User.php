@@ -10,8 +10,14 @@ class User extends Authenticatable
     use HasFactory;
 
     protected $fillable=[
+        "id",
         'name',
         'email',
         "password"
     ];
+
+    public function requestShift()
+    {
+        return $this->hasMany(RequestShift::class);
+    }
 }

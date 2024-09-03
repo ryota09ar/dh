@@ -10,7 +10,7 @@
 <body>
     <h1>メニュー</h1>
     <a href="{{ route("shiftLookFor.yearMonth") }}">シフト募集</a>
-    <a>シフト編集</a>
+    <a href="{{ route("shiftDecide.yearMonth") }}">シフト編集</a>
     <a>シフト一覧</a>
     <a href="{{ route("shiftPlace.index") }}">シフト場所編集</a>
 </body>
