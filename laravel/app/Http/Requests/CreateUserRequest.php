@@ -22,7 +22,8 @@ class CreateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "name" => "required",
+            "family_name" => "required",
+            "first_name" => "required",
             "email" => "required|unique:users",
             "password" => "required",
         ];
@@ -30,7 +31,8 @@ class CreateUserRequest extends FormRequest
 
     public function messages(){
         return [
-            "name.required"=>"名前",
+            "family_name.required"=>"名前",
+            "first_name.required"=>"名前",
             "email.required"=>"メール",
             "email.unique"=>"すでに存在するメールアドレスです",
             "password.required"=>"パスワード",

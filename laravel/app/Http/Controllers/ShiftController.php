@@ -52,10 +52,6 @@ class ShiftController extends Controller
         return $daysOfWeek;
     }
 
-    public function requestYearMonth(){
-        return view('shift.requestYearMonth');
-    }
-
     public function requestCreate(Request $request)
     {
         $user = Auth::user();

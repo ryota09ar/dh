@@ -17,7 +17,8 @@ class UserController extends Controller
         $validated=$request->validated();
 
         User::create([
-            "name"=>$validated['name'],
+            "family_name"=>$validated["family_name"],
+            "first_name"=>$validated['first_name'],
             "email"=>$validated['email'],
             "password"=>Hash::make($validated['password'])
         ]);

@@ -15,19 +15,22 @@ class UsersTableSeeder extends Seeder
     public function run(): void
     {
         DB::table('users')->insert([
-            "name"=>"a",
+            "family_name"=>"荒木",
+            "first_name"=>"亮太",
             "email"=>"a@a",
             "password"=>Hash::make("a"),
         ]);
 
         DB::table('users')->insert([
-            "name"=>"b",
+            "family_name"=>"田中",
+            "first_name"=>"太郎",
             "email"=>"b@b",
             "password"=>Hash::make("b"),
         ]);
 
         DB::table('users')->insert([
-            "name"=>"c",
+            "family_name"=>"田中",
+            "first_name"=>"亮太",
             "email"=>"c@c",
             "password"=>Hash::make("c"),
         ]);

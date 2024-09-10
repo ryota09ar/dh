@@ -6,9 +6,12 @@ use App\Models\DecideShift;
 use App\Models\LookForShift;
 use App\Models\RequestShift;
 use App\Models\ShiftContent;
+use App\Models\User;
+use App\Services\UserService;
 use DateTime;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Color;
@@ -67,10 +70,6 @@ class ShiftAdminController extends Controller
     }
 
     //look for shift
-    public function lookForYearMonth(){
-        return view('admin.lookForYearMonth');
-    }
-
     public function lookForShiftsLoaded($countOfDate, $lookForShifts, $year, $month): array
     {
         $lookForShiftsLoaded=[];
@@ -207,7 +206,7 @@ class ShiftAdminController extends Controller
         $sheet->getStyle('B4:G34')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('B4:G34')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
-        $newFileName = 'exported-file.xlsx';
+        $newFileName = "look_for_shift_{$year}_{$month}.xlsx";
         $writer = new Xlsx($spreadsheet);
         $writer->save(storage_path('app/public/' . $newFileName));
 
@@ -215,10 +214,6 @@ class ShiftAdminController extends Controller
     }
 
     //decide shift
-    public function decideYearMonth(){
-        return view("admin.decideYearMonth");
-    }
-
     public function lookForShiftIDsLoaded($countOfDate, $lookForShifts, $year, $month): array
     {
         $lookForShiftIdsLoaded=[];
@@ -271,5 +266,116 @@ class ShiftAdminController extends Controller
         }
 
         return redirect()->route("admin.menu");
+    }
+
+    //decided shift index
+    public function bubble(&$list, $pointer): void
+    {
+        if ($pointer == 0){
+            return;
+        } else if($list[$pointer]!=0){
+            $temp=$list[$pointer];
+            $list[$pointer]=$list[$pointer-1];
+            $list[$pointer-1]=$temp;
+            $this->bubble($list, $pointer-1);
+        }
+    }
+    public function decidedIndex(Request $request){
+        $year = $request['year'];
+        $month = $request['month'];
+        $countOfDate = $this->countOfDate($year, $month);
+        $daysOfWeek = $this->daysOfWeek($year, $month, $countOfDate);
+        $decidedShifts = DecideShift::whereYear("date", $year)->whereMonth("date", $month)->get();
+        $lookForShifts=LookForShift::whereYear("date", $year)->whereMonth("date", $month)->get();
+        $lookForShiftIdsLoaded=$this->lookForShiftIdsLoaded($countOfDate, $lookForShifts, $year, $month);
+
+        for ($i=1;$i<=$countOfDate;$i++){
+            for ($j=0;$j<4;$j++){
+                if ($lookForShiftIdsLoaded[$i][$j]!=0
+                    && !DecideShift::where("place", LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->place)
+                    ->where("time", LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->time)
+                    ->where("date", LookForShift::find($lookForShiftIdsLoaded[$i][$j])->date)->exists()) {
+                    $lookForShiftIdsLoaded[$i][$j]=0;
+                }
+            }
+            for ($j=1;$j<4;$j++){
+                $this->bubble($lookForShiftIdsLoaded[$i], $j);
+            }
+        }
+
+        return view("admin.decidedIndex", compact('year', 'month', 'countOfDate', 'daysOfWeek', 'decidedShifts', 'lookForShiftIdsLoaded'));
+    }
+
+    public function exportDecidedShiftsToExcel(Request $request){
+        $year = $request['year'];
+        $month = $request['month'];
+        $countOfDate = $this->countOfDate($year, $month);
+        $daysOfWeek = $this->daysOfWeek($year, $month, $countOfDate);
+        $decidedShifts = DecideShift::whereYear("date", $year)->whereMonth("date", $month)->get();
+        $lookForShifts=LookForShift::whereYear("date", $year)->whereMonth("date", $month)->get();
+        $lookForShiftIdsLoaded=$this->lookForShiftIdsLoaded($countOfDate, $lookForShifts, $year, $month);
+
+        for ($i=1;$i<=$countOfDate;$i++){
+            for ($j=0;$j<4;$j++){
+                if ($lookForShiftIdsLoaded[$i][$j]!=0
+                    && !DecideShift::where("place", LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->place)
+                        ->where("time", LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->time)
+                        ->where("date", LookForShift::find($lookForShiftIdsLoaded[$i][$j])->date)->exists()) {
+                    $lookForShiftIdsLoaded[$i][$j]=0;
+                }
+            }
+            for ($j=1;$j<4;$j++){
+                $this->bubble($lookForShiftIdsLoaded[$i], $j);
+            }
+        }
+
+        $templatePath = storage_path('app/templates/dh.xlsx');
+        $spreadsheet = IOFactory::load($templatePath);
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->setCellValue("A1", $year);
+        $sheet->setCellValue("B3", $month);
+
+        for ($i=1;$i<=$countOfDate;$i++){
+            $sheet->setCellValue("B".($i+3), $i);
+            $sheet->setCellValue("C".($i+3), $daysOfWeek[$i]);
+            if ($daysOfWeek[$i]=="土"){
+                $sheet->getStyle("C".($i+3))->getFont()->getColor()->setRGB(Color::COLOR_BLUE);
+            } else if ($daysOfWeek[$i]=="日"){
+                $sheet->getStyle("C".($i+3))->getFont()->getColor()->setRGB(Color::COLOR_RED);
+            }
+            $column="D";
+            for ($j=0;$j<count($lookForShiftIdsLoaded[$i]);$j++){
+                $k=$lookForShiftIdsLoaded[$i][$j];
+                if ($k!=0){
+                    $place=LookForShift::find($k)->shiftContent->place;
+                    $time=LookForShift::find($k)->shiftContent->time;
+                    $cellValue="【".$place.$time."】";
+                    foreach ($decidedShifts as $decidedShift){
+                        if($decidedShift->place==$place && $decidedShift->time==$time && $decidedShift->date==\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->date){
+                            $cellValue.=" ".UserService::return_name($decidedShift->user_id);
+                        }
+                    }
+                    $sheet->setCellValue($column.($i+3), $cellValue);
+                    if(mb_strlen($cellValue)>21){
+                        $sheet->getStyle($column++.($i+3))->getFont()->setSize(5);
+                    } else{
+                        $sheet->getStyle($column++.($i+3))->getFont()->setSize(6);
+                    }
+
+                } else {
+                    break;
+                }
+
+            }
+        }
+        $sheet->getStyle('B4:G34')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('B4:G34')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
+        $newFileName = "decided_shift_{$year}_{$month}.xlsx";
+        $writer = new Xlsx($spreadsheet);
+        $writer->save(storage_path('app/public/' . $newFileName));
+
+        return response()->download(storage_path('app/public/' . $newFileName));
     }
 }

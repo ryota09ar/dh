@@ -21,7 +21,8 @@
     <form action="{{route('user.store')}}" method="post">
         @csrf
         <label for="name">名前</label>
-        <input id="name" name="name" type="text">
+        姓<input id="name" name="family_name" type="text">
+        名<input id="name" name="first_name" type="text">
         <label for="email">メールアドレス</label>
         <input id="email" name="email" type="email">
         <label for="password">パスワード</label>
