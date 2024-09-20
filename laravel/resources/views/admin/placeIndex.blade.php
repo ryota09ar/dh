@@ -5,14 +5,29 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <link rel="stylesheet" href="{{ asset("/css/header.css") }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset("/css/admin/placeIndex.css") }}?v={{ time() }}">
+    <title>placeIndex</title>
 </head>
 <body>
-    <h1>シフト場所編集</h1>
-    @foreach($shift_contents as $shift_content)
-        <a href="{{route("shiftPlace.edit", ["id"=>$shift_content->id]) }}">{{$shift_content->place.$shift_content->time}}</a>
-    @endforeach
-    <a href="{{route("shiftPlace.create")}}">追加</a>
-    <a href="{{route("admin.menu")}}">メニューへ</a>
+    <header>
+        <div class="container">
+            <ol class="breadcrumb-004">
+                <li><a href="{{ route("admin.menu") }}">管理者メニュー</a></li>
+                <li><a href="#">シフト場所一覧</a></li>
+            </ol>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <div class="buttons">
+            @foreach($shift_contents as $shift_content)
+                <a href="{{route("shiftPlace.edit", ["id"=>$shift_content->id]) }}" class="button-51">{{$shift_content->place.$shift_content->time}}</a>
+            @endforeach
+            </div>
+            <a href="{{route("shiftPlace.create")}}" class="addition">追加</a>
+        </div>
+    </main>
+
 </body>
 </html>

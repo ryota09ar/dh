@@ -1,0 +1,52 @@
+.requestShift{
+    display: flex;
+    justify-content: center;
+    position: relative;
+    margin:30px 50px;
+}
+
+.requestShift{
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 50px;
+}
+th, td{
+    padding: 10px;
+    border: solid 1px #ccc;
+    text-align:center;
+    box-sizing:border-box;
+}
+
+@media screen and (max-width: 1050px) {
+    .requestShift{
+        margin: 0 20px;
+    }
+    .requestTable {
+        width: 100%;
+    }
+    table.requestTable th,
+    table.requestTable td {
+        display: block;
+        width: 100%;
+        border-bottom:none;
+    }
+    .requestTable tr:last-child{
+        border-bottom: solid 1px #ccc;
+    }
+}
+
+.Sat{
+    color: blue;
+}
+
+.Sun{
+    color: red;
+}
+
+th{
+    padding:5px;
+}
+
+.checkbox-3 label:has(:checked)::after {
+    left: 15px;
+}

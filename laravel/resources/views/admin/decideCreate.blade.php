@@ -8,49 +8,69 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{{ asset("/css/header.css") }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset("/css/yearMonthSelect.css") }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset("/css/checkbox.css") }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset("/css/admin/decideCreate.css") }}?v={{ time() }}">
+
     <title>decideCreate</title>
 </head>
 <body>
-    <h1>シフト編集</h1>
-    <form id="dataForm">
-        @csrf
-        <select id="year" name="year">
-            @for($i=$year-1;$i<=$year+1;$i++)
-                <option value={{$i}} {{ ($i==$year) ? "selected":"" }}>{{$i}}</option>
-            @endfor
-        </select>
-        <label for="year">年</label>
+    <header>
+        <div class="container">
+            <ol class="breadcrumb-004">
+                <li><a href="{{ route("admin.menu") }}">管理者メニュー</a></li>
+                <li><a href="#">シフト編集</a></li>
+            </ol>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <div class="select-year-month">
+                <form id="dataForm">
+                    @csrf
+                    <label class="select-yearMonth">
+                        <select id="year" name="year">
+                            @for($i=$year-1;$i<=$year+1;$i++)
+                                <option value={{$i}} {{ ($i==$year) ? "selected":"" }}>{{$i}}</option>
+                            @endfor
+                        </select>
+                    </label>
+                    <label for="year">年</label>
 
-        <select id="month" name="month">
-            @for($i=1;$i<=12;$i++)
-                <option value={{$i}} {{ ($i==$month) ? "selected":"" }}>{{$i}}</option>
-            @endfor
-        </select>
-        <label for="month">月</label>
-        <button type="submit">更新</button>
-    </form>
+                    <label class="select-yearMonth">
+                        <select id="month" name="month">
+                            @for($i=1;$i<=12;$i++)
+                                <option value={{$i}} {{ ($i==$month) ? "selected":"" }}>{{$i}}</option>
+                            @endfor
+                        </select>
+                    </label>
+                    <label for="month">月</label>
+                    <button type="submit" class="renew">更新</button>
+                </form>
+            </div>
 
-    <div class="decideShift">
-        <form action="{{ route("shiftDecide.store") }}" method="post" id="checkboxForm">
-            @csrf
-            <input type="hidden" name="year" value={{ $year }}>
-            <input type="hidden" name="month" value={{ $month }}>
-            @php
-                $decideShifts = App\Models\DecideShift::whereYear('date',$year)->whereMonth('date',$month)->get();
-            @endphp
-            <label for="shift"></label>
-            <table>
-                @for($i=1;$i<=$countOfDate;$i++)
-                    <tr>
-                        <th>{{ $i }}</th>
-                        <th>{{ $daysOfWeek[$i] }}</th>
-                        @for($j=0;$j<4;$j++)
-                            @if($lookForShiftIdsLoaded[$i][$j]==0)
-                                <td></td>
-                            @else
+            <div class="decideShift">
+                <form action="{{ route("shiftDecide.store") }}" method="post" id="checkboxForm">
+                    @csrf
+                    <input type="hidden" name="year" value={{ $year }}>
+                    <input type="hidden" name="month" value={{ $month }}>
+                    @php
+                        $decideShifts = App\Models\DecideShift::whereYear('date',$year)->whereMonth('date',$month)->get();
+                    @endphp
+                    <label for="shift"></label>
+                    <table class="decideTable">
+                    @for($i=1;$i<=$countOfDate;$i++)
+                        <tr>
+                            <th>{{$i}}日 <span{!! ($daysOfWeek[$i]=="土") ? " class=\"Sat\"":(($daysOfWeek[$i]=="日") ? " class=\"Sun\"":"") !!}>{{$daysOfWeek[$i]}}</span></th>
+                            @for($j=0;$j<4;$j++)
+                                @if($lookForShiftIdsLoaded[$i][$j]==0)
+                                    <td></td>
+                                @else
                                 <td>
                                     {{ \App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->place }}
                                     <br>
+                                    <fieldset class="checkbox-3">
                                     @foreach($requestShiftsLoaded[$i] as $requestShift)
                                         @if($lookForShiftIdsLoaded[$i][$j]==$requestShift->look_for_shift_id)
                                             @php
@@ -63,44 +83,47 @@
                                                     }
                                                 }
                                             @endphp
-                                            <input id="shift" type="checkbox" class="checkbox" name="decideShifts_{{ $i }}[]" data-option="{{ $requestShift->user_id }}"  value={{ $requestShift->id }}  {{ ($k) ? "checked":"" }}>{{UserService::return_name($requestShift->user_id)}}
+                                            <label>
+                                                <input id="shift" type="checkbox" class="checkbox" name="decideShifts_{{ $i }}[]" data-option="{{ $requestShift->user_id }}"  value={{ $requestShift->id }}  {{ ($k) ? "checked":"" }}>{{UserService::return_name($requestShift->user_id)}}
+                                            </label>
                                         @endif
                                     @endforeach
+                                    </fieldset>
                                 </td>
-                            @endif
-                        @endfor
-                    </tr>
-                @endfor
-                <tr></tr>
-            </table>
-            <table>
-                <thead>
-                <tr>
-                    <th></th>
-                    @foreach($users=\App\Models\User::all() as $user)
-                        <th>{{ UserService::return_name($user->id) }}</th>
-                    @endforeach
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <th>希望数</th>
-                    @foreach($users as $user)
-                        <th>{{ \App\Models\RequestShift::whereYear('date',$year)->whereMonth('date',$month)->where("user_id", $user->id)->count() }}</th>
-                    @endforeach
-                </tr>
-                <tr>
-                    <th>実施数</th>
-                    @foreach($users as $user)
-                        <th><span id="checkedUser{{ $user->id }}Count">0</span></th>
-                    @endforeach
-                </tr>
-                </tbody>
-            </table>
-            <button>決定</button>
-        </form>
-    </div>
-    <a href="{{ route("admin.menu") }}">メニューへ</a>
+                                @endif
+                            @endfor
+                        </tr>
+                    @endfor
+                    </table>
+                    <table class="countTable">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            @foreach($users=\App\Models\User::all() as $user)
+                                <th>{{ UserService::return_name($user->id) }}</th>
+                            @endforeach
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <th>希望数</th>
+                            @foreach($users as $user)
+                                <th>{{ \App\Models\RequestShift::whereYear('date',$year)->whereMonth('date',$month)->where("user_id", $user->id)->count() }}</th>
+                            @endforeach
+                        </tr>
+                        <tr>
+                            <th>実施数</th>
+                            @foreach($users as $user)
+                                <th><span id="checkedUser{{ $user->id }}Count">0</span></th>
+                            @endforeach
+                        </tr>
+                        </tbody>
+                    </table>
+                    <button class="submit_button">決定</button>
+                </form>
+            </div>
+        </div>
+    </main>
 
 
     <script>

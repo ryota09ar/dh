@@ -1,0 +1,85 @@
+main{
+    text-align: center;
+}
+
+.buttons{
+    display: flex;
+    flex-wrap: wrap;
+    width: 70%;
+    margin:10px auto;
+}
+
+.button-51 {
+    display: flex;
+    justify-content: center;
+    position: relative;
+    width: 200px;
+    margin: 0 auto;
+    padding: .6em 1em;
+    border: none;
+    border-bottom: 2px solid #e6edf3;
+    background-color: transparent;
+    color: #333;
+    font-weight: 600;
+    font-size: 1em;
+}
+
+.button-51::after {
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    transform: scaleX(0);
+    transform-origin: center left;
+    width: 100%;
+    height: 2px;
+    background-color: #15a2bc;
+    content: '';
+    transition: transform .3s ease;
+}
+
+.button-51:hover::after {
+    transform: scaleX(1);
+}
+
+.addition {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 250px;
+    margin: 40px auto;
+    padding: .9em 3.2em .9em 2em;
+    border: none;
+    border-radius: 5px;
+    background-color: #15a2bc;
+    background-image: url(data:image/svg+xml;charset=utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2028%2028%22%3E%0A%20%20%20%20%3Ccircle%20cx%3D%2214%22%20cy%3D%2214%22%20r%3D%2214%22%20style%3D%22fill%3A%23fff%3B%22%2F%3E%0A%3C%2Fsvg%3E);
+    background-position: right 3em center;
+    background-size: 1.2em;
+    background-repeat: no-repeat;
+    color: #fff;
+    font-weight: 600;
+    font-size: 1em;
+}
+
+.addition:hover {
+    background-color: #045c7c;
+}
+
+.addition::before,
+.addition::after {
+    position: absolute;
+    right: calc(3.6em - 1.5px);
+    width: 3px;
+    height: 10px;
+    border-radius: 1px;
+    background-color: #15a2bc;
+    content: '';
+}
+
+.addition::before {
+    transform: rotate(90deg);
+}
+
+a{
+    text-decoration: none;
+}

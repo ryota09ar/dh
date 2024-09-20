@@ -1,5 +1,6 @@
 .select-box {
     position: relative;
+    width: 20%;
 }
 
 .select-box::before,
@@ -33,7 +34,7 @@
 
 .select-box select {
     appearance: none;
-    min-width: 230px;
+    width: 20%;
     height: 2em;
     padding: 0.2em 2.6em 0.2em 0.6em;
     border: none;
@@ -49,79 +50,37 @@
     outline: 2px solid #15a2bc;
 }
 
-.lookForShift{
+form{
     display: flex;
+    flex-direction: column;
     justify-content: center;
-    position: relative;
 }
 
-table{
-    border-collapse: collapse;
-    width: 100%;
-}
-.lookForTable th,
-.lookForTable td{
-    padding: 10px;
-    border: solid 1px #ccc;
-    text-align:center;
-    box-sizing:border-box;
-}
-@media screen and (max-width: 1050px) {
-    .lookForShift{
-        margin: 0;
-    }
-    .lookForTable {
-        width: 100%;
-    }
-    table.lookForTable th,
-    table.lookForTable td {
-        display: block;
-        width: 100%;
-        border-bottom:none;
-    }
-    .lookForTable tr:last-child{
-        border-bottom: solid 1px #ccc;
-    }
-    .complete{
-        width: 100px;
-    }
-    .excel{
-        width: 70px;
-    }
-}
-@media(min-width: 1050px){
-    .complete{
-        width: 250px;
-    }
-    .excel{
-        width: 150px;
-    }
+.edit{
+    margin: 10px auto;
 }
 
-
-.Sat{
-    color: blue;
+.text-box {
+    width: 30%;
+    padding: 6px 10px;
+    margin-right: 10px;
+    border: 1px solid #d2d2d2;
+    box-sizing: border-box;
+    border-radius: 3px;
+    background: #ebebeb;
+    color: #333;
+    font-size: 1em;
 }
 
-.Sun{
-    color: red;
+.text-box::placeholder {
+    color: #999;
 }
 
-th{
-    padding:5px;
+button{
+    margin: 30px auto;
 }
 
-.buttons{
-    display: flex;
-    align-items: center;
-}
-
-.room{
-    width: 25%;
-    margin: 0 20px;
-}
-
-.complete {
+button {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -137,23 +96,7 @@ th{
     transition: .5s ease;
 }
 
-.complete:hover {
+button:hover {
     transform: translateY(3px);
     border-bottom-width: 2px;
-}
-
-.excel {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 40px;
-    margin: 0 auto;
-    padding: .9em 2em;
-    border: 2px solid #fff;
-    border-radius: 5px;
-    box-shadow: 0 0 0 3px #00a94a;
-    background-color: #00a94a;
-    color: #fff;
-    font-weight: 600;
-    font-size: 1em;
 }

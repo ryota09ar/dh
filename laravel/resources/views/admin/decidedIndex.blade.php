@@ -8,57 +8,79 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{{ asset("/css/header.css") }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset("/css/yearMonthSelect.css") }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset("/css/admin/decidedCreate.css") }}?v={{ time() }}">
     <title>decidedIndex</title>
 </head>
 <body>
-<h1>シフト一覧</h1>
-<form id="dataForm">
-    @csrf
-    <select id="year" name="year">
-        @for($i=$year-1;$i<=$year+1;$i++)
-            <option value={{$i}} {{ ($i==$year) ? "selected":"" }}>{{$i}}</option>
-        @endfor
-    </select>
-    <label for="year">年</label>
+    <header>
+        <div class="container">
+            <ol class="breadcrumb-004">
+                <li><a href="{{ route("admin.menu") }}">管理者メニュー</a></li>
+                <li><a href="#">シフト一覧</a></li>
+            </ol>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <div class="select-year-month">
+                <form id="dataForm">
+                    @csrf
+                    <label class="select-yearMonth">
+                        <select id="year" name="year">
+                            @for($i=$year-1;$i<=$year+1;$i++)
+                                <option value={{$i}} {{ ($i==$year) ? "selected":"" }}>{{$i}}</option>
+                            @endfor
+                        </select>
+                    </label>
+                    <label for="year">年</label>
 
-    <select id="month" name="month">
-        @for($i=1;$i<=12;$i++)
-            <option value={{$i}} {{ ($i==$month) ? "selected":"" }}>{{$i}}</option>
-        @endfor
-    </select>
-    <label for="month">月</label>
-    <button type="submit">更新</button>
-</form>
+                    <label class="select-yearMonth">
+                        <select id="month" name="month">
+                            @for($i=1;$i<=12;$i++)
+                                <option value={{$i}} {{ ($i==$month) ? "selected":"" }}>{{$i}}</option>
+                            @endfor
+                        </select>
+                    </label>
+                    <label for="month">月</label>
+                    <button type="submit" class="renew">更新</button>
+                </form>
 
-<table>
-    @for($i=1;$i<=$countOfDate; $i++)
-        <tr>
-            <th>{{ $i }}</th>
-            <th>{{ $daysOfWeek[$i] }}</th>
-            @for($j=0;$j<4;$j++)
-                @if($lookForShiftIdsLoaded[$i][$j]!=0)
-                    <td>
-                        {{ ($place=\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->place).($time=\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->time)}}
-                        @foreach($decidedShifts as $decidedShift)
-                            @if($decidedShift->place==$place && $decidedShift->time==$time && $decidedShift->date==\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->date)
-                                {{ UserService::return_name($decidedShift->user_id) }}
-                            @endif
-                        @endforeach
-                    </td>
-                @else
-                    <td></td>
-                @endif
-            @endfor
-        </tr>
-    @endfor
-</table>
-<form action="{{route("shiftDecided.excel")}}" method="post">
-    @csrf
-    <input type="hidden" name="year" value={{ $year }}>
-    <input type="hidden" name="month" value={{ $month }}>
-    <button>Excel出力</button>
-</form>
-<a href="{{ route("admin.menu") }}">メニューへ</a>
+            </div>
+
+            <div class="decidedIndex">
+                <table class="decidedTable">
+                    @for($i=1;$i<=$countOfDate; $i++)
+                        <tr>
+                            <th>{{$i}}日 <span{!! ($daysOfWeek[$i]=="土") ? " class=\"Sat\"":(($daysOfWeek[$i]=="日") ? " class=\"Sun\"":"") !!}>{{$daysOfWeek[$i]}}</span></th>
+                        @for($j=0;$j<4;$j++)
+                                @if($lookForShiftIdsLoaded[$i][$j]!=0)
+                                    <td>
+                                        {{ ($place=\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->place).($time=\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->time)}}
+                                        @foreach($decidedShifts as $decidedShift)
+                                            @if($decidedShift->place==$place && $decidedShift->time==$time && $decidedShift->date==\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->date)
+                                                {{ UserService::return_name($decidedShift->user_id) }}
+                                            @endif
+                                        @endforeach
+                                    </td>
+                                @else
+                                    <td></td>
+                                @endif
+                            @endfor
+                        </tr>
+                    @endfor
+                </table>
+                <form action="{{route("shiftDecided.excel")}}" method="post" class="excel-form">
+                    @csrf
+                    <input type="hidden" name="year" value={{ $year }}>
+                    <input type="hidden" name="month" value={{ $month }}>
+                    <button class="excel">Excel出力</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>

@@ -1,0 +1,86 @@
+.decidedIndex{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    margin:30px 50px;
+}
+
+.decidedTable{
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 50px;
+}
+
+th,
+td{
+    padding: 10px;
+    border: solid 1px #ccc;
+    text-align:center;
+    box-sizing:border-box;
+    white-space: normal;     /* テキストを通常の改行に設定 */
+    word-wrap: break-word;   /* 長い単語を折り返す */
+    word-break: normal;      /* 単語全体で折り返す */
+}
+
+.excel-form{
+    margin: 0 auto;
+}
+
+@media screen and (max-width: 600px) {
+    .decidedIndex{
+        margin: 0 20px;
+    }
+    .decidedTable {
+        width: 100%;
+    }
+    table.decidedTable th,
+    table.decidedTable td {
+        display: block;
+        width: 100%;
+    }
+    .decidedTable td{
+        border-bottom: none;
+    }
+    .decidedTable th {
+        border: solid 3px #000; /* th要素の枠線を太く */
+    }
+    .decidedTable tr:last-child{
+        border-bottom: solid 1px #ccc;
+    }
+}
+
+@media (min-width: 600px) {
+    .decidedTable td{
+        font-size: 15px;
+    }
+}
+
+.Sat{
+    color: blue;
+}
+
+.Sun{
+    color: red;
+}
+
+th{
+    padding:5px;
+}
+
+.excel {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+    margin: 0 auto;
+    margin-bottom: 30px;
+    padding: .9em 2em;
+    border: 2px solid #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 0 3px #00a94a;
+    background-color: #00a94a;
+    color: #fff;
+    font-weight: 600;
+    font-size: 1em;
+}

@@ -1,0 +1,65 @@
+.decideShift{
+    display: flex;
+    justify-content: center;
+    position: relative;
+    margin:30px 50px;
+}
+
+.decideTable{
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 50px;
+}
+
+.countTable{
+    margin: 0 auto;
+    border-collapse: collapse;
+}
+
+th, td{
+    padding: 10px;
+    border: solid 1px #ccc;
+    text-align:center;
+    box-sizing:border-box;
+}
+.decideTable td:has(input){
+    width: 25%;
+}
+
+@media screen and (max-width: 1050px) {
+    .decideShift{
+        margin: 0 20px;
+    }
+    .decideTable {
+        width: 100%;
+    }
+    table.decideTable th,
+    table.decideTable td {
+        display: block;
+        width: 100%;
+        border-bottom:none;
+    }
+    .decideTable tr:last-child{
+        border-bottom: solid 1px #ccc;
+    }
+}
+
+.Sat{
+    color: blue;
+}
+
+.Sun{
+    color: red;
+}
+
+th{
+    padding:5px;
+}
+
+.checkbox-3 label{
+    width: 110px;
+}
+
+.checkbox-3 label:has(:checked)::after {
+    left: 15px;
+}
