@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ConfirmedYearMonth;
 use App\Models\DecideShift;
 use App\Models\LookForShift;
 use App\Models\RequestShift;
@@ -70,24 +71,6 @@ class ShiftAdminController extends Controller
     }
 
     //look for shift
-    public function lookForShiftsLoaded($countOfDate, $lookForShifts, $year, $month): array
-    {
-        $lookForShiftsLoaded=[];
-        for ($i=1;$i<=$countOfDate;$i++){
-            $lookForShiftsLoaded[$i]=[0,0,0,0];
-        }
-        for ($i=1;$i<=$countOfDate;$i++){
-            $pointer=0;
-            foreach ($lookForShifts as $lookForShift) {
-                if ($lookForShift->date == $year . "-" . str_pad($month, 2, "0", STR_PAD_LEFT) . "-" . str_pad($i, 2, "0", STR_PAD_LEFT)
-                    && !in_array($lookForShift->shift_content_id, $lookForShiftsLoaded[$i])) {
-                    $lookForShiftsLoaded[$i][$pointer++]=$lookForShift->shift_content_id;
-                }
-            }
-        }
-        return $lookForShiftsLoaded;
-    }
-
     public function countOfDate($year, $month): int
     {
         $date = new DateTime("$year-$month-01");
@@ -135,16 +118,15 @@ class ShiftAdminController extends Controller
     public function lookForCreate(Request $request){
         $year = $request['year'];
         $month = $request['month'];
-        $lookForShifts = LookForShift::whereYear('date',$year)->whereMonth('date',$month)->get();
         $shift_contents = ShiftContent::orderBy("place", "asc")->orderBy("time", "asc")->get();
 
         $countOfDate = $this->countOfDate($year, $month);
 
         $daysOfWeek = $this->daysOfWeek($year, $month, $countOfDate);
 
-        $lookForShiftsLoaded = $this->lookForShiftsLoaded($countOfDate, $lookForShifts, $year, $month);
+        $lookForShiftsLoaded = LookForShift::lookForShiftsLoaded($year, $month, $countOfDate);
 
-        return view('admin.lookForCreate', compact('shift_contents', "year", "month", "lookForShiftsLoaded", "lookForShifts", "countOfDate", "daysOfWeek"));
+        return view('admin.lookForCreate', compact('shift_contents', "year", "month", "lookForShiftsLoaded", "countOfDate", "daysOfWeek"));
     }
 
     public function lookForStore(Request $request){
@@ -170,10 +152,9 @@ class ShiftAdminController extends Controller
     public function exportLookForShiftsToExcel(Request $request){
         $year = $request['year'];
         $month = $request['month'];
-        $lookForShifts = LookForShift::whereYear('date',$year)->whereMonth('date',$month)->get();
         $countOfDate = $this->countOfDate($year, $month);
         $daysOfWeek = $this->daysOfWeek($year, $month, $countOfDate);
-        $lookForShiftsLoaded=$this->lookForShiftsLoaded($countOfDate, $lookForShifts, $year, $month);
+        $lookForShiftsLoaded = LookForShift::lookForShiftsLoaded($year, $month, $countOfDate);
 
         $templatePath = storage_path('app/templates/dh.xlsx');
         $spreadsheet = IOFactory::load($templatePath);
@@ -213,39 +194,26 @@ class ShiftAdminController extends Controller
         return response()->download(storage_path('app/public/' . $newFileName));
     }
 
-    //decide shift
-    public function lookForShiftIDsLoaded($countOfDate, $lookForShifts, $year, $month): array
+    public function lookForConfirmation(Request $request)
     {
-        $lookForShiftIdsLoaded=[];
-        for ($i=1;$i<=$countOfDate;$i++){
-            $lookForShiftIdsLoaded[$i]=[0,0,0,0];
-        }
-        for ($i=1;$i<=$countOfDate;$i++){
-            $pointer=0;
-            foreach ($lookForShifts as $lookForShift) {
-                if ($lookForShift->date == $year . "-" . str_pad($month, 2, "0", STR_PAD_LEFT) . "-" . str_pad($i, 2, "0", STR_PAD_LEFT)
-                    && !in_array($lookForShift->shift_content_id, $lookForShiftIdsLoaded[$i])) {
-                    $lookForShiftIdsLoaded[$i][$pointer++]=$lookForShift->id;
-                }
-            }
-        }
-        return $lookForShiftIdsLoaded;
+        ConfirmedYearMonth::create([
+            "year"=>$request["year"],
+            "month"=>$request["month"],
+        ]);
+
+        return redirect()->route("admin.menu");
     }
 
+    //decide shift
     public function decideCreate(Request $request){
         $year = $request['year'];
         $month = $request['month'];
         $countOfDate = $this->countOfDate($year, $month);
         $daysOfWeek = $this->daysOfWeek($year, $month, $countOfDate);
-        $decideShifts = DecideShift::whereYear('date',$year)->whereMonth('date',$month)->get();
-        $lookForShifts = LookForShift::whereYear('date',$year)->whereMonth('date',$month)->orderBy("shift_content_id", "asc")->get();
-        $lookForShiftIdsLoaded = $this->lookForShiftIdsLoaded($countOfDate, $lookForShifts, $year, $month);
-        $requestShiftsLoaded=[];
-        for ($i=1;$i<=$countOfDate;$i++){
-            $requestShiftsLoaded[$i]=RequestShift::whereYear("date", $year)->whereMonth('date', $month)->whereDay('date', $i)->orderBy("user_id", "asc")->get();
-        }
+        $lookForShiftIdsLoaded = LookForShift::lookForShiftIdsLoaded($year, $month, $countOfDate);
+        $requestShiftsLoaded=RequestShift::requestShiftsLoaded($year, $month, $countOfDate);
 
-        return view("admin.decideCreate", compact('year', 'month', 'countOfDate', 'daysOfWeek', "decideShifts","requestShiftsLoaded", "lookForShiftIdsLoaded"));
+        return view("admin.decideCreate", compact('year', 'month', 'countOfDate', 'daysOfWeek', "requestShiftsLoaded", "lookForShiftIdsLoaded"));
     }
 
     public function decideStore(Request $request){
@@ -269,39 +237,14 @@ class ShiftAdminController extends Controller
     }
 
     //decided shift index
-    public function bubble(&$list, $pointer): void
-    {
-        if ($pointer == 0){
-            return;
-        } else if($list[$pointer]!=0){
-            $temp=$list[$pointer];
-            $list[$pointer]=$list[$pointer-1];
-            $list[$pointer-1]=$temp;
-            $this->bubble($list, $pointer-1);
-        }
-    }
     public function decidedIndex(Request $request){
         $year = $request['year'];
         $month = $request['month'];
         $countOfDate = $this->countOfDate($year, $month);
         $daysOfWeek = $this->daysOfWeek($year, $month, $countOfDate);
         $decidedShifts = DecideShift::whereYear("date", $year)->whereMonth("date", $month)->get();
-        $lookForShifts=LookForShift::whereYear("date", $year)->whereMonth("date", $month)->get();
-        $lookForShiftIdsLoaded=$this->lookForShiftIdsLoaded($countOfDate, $lookForShifts, $year, $month);
-
-        for ($i=1;$i<=$countOfDate;$i++){
-            for ($j=0;$j<4;$j++){
-                if ($lookForShiftIdsLoaded[$i][$j]!=0
-                    && !DecideShift::where("place", LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->place)
-                    ->where("time", LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->time)
-                    ->where("date", LookForShift::find($lookForShiftIdsLoaded[$i][$j])->date)->exists()) {
-                    $lookForShiftIdsLoaded[$i][$j]=0;
-                }
-            }
-            for ($j=1;$j<4;$j++){
-                $this->bubble($lookForShiftIdsLoaded[$i], $j);
-            }
-        }
+        $lookForShiftIdsLoaded=LookForShift::lookForShiftIdsLoaded($year, $month, $countOfDate);
+        DecideShift::lookForSortByDecided($lookForShiftIdsLoaded, $countOfDate);
 
         return view("admin.decidedIndex", compact('year', 'month', 'countOfDate', 'daysOfWeek', 'decidedShifts', 'lookForShiftIdsLoaded'));
     }
@@ -312,22 +255,8 @@ class ShiftAdminController extends Controller
         $countOfDate = $this->countOfDate($year, $month);
         $daysOfWeek = $this->daysOfWeek($year, $month, $countOfDate);
         $decidedShifts = DecideShift::whereYear("date", $year)->whereMonth("date", $month)->get();
-        $lookForShifts=LookForShift::whereYear("date", $year)->whereMonth("date", $month)->get();
-        $lookForShiftIdsLoaded=$this->lookForShiftIdsLoaded($countOfDate, $lookForShifts, $year, $month);
-
-        for ($i=1;$i<=$countOfDate;$i++){
-            for ($j=0;$j<4;$j++){
-                if ($lookForShiftIdsLoaded[$i][$j]!=0
-                    && !DecideShift::where("place", LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->place)
-                        ->where("time", LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->time)
-                        ->where("date", LookForShift::find($lookForShiftIdsLoaded[$i][$j])->date)->exists()) {
-                    $lookForShiftIdsLoaded[$i][$j]=0;
-                }
-            }
-            for ($j=1;$j<4;$j++){
-                $this->bubble($lookForShiftIdsLoaded[$i], $j);
-            }
-        }
+        $lookForShiftIdsLoaded=LookForShift::lookForShiftIdsLoaded($year, $month, $countOfDate);
+        DecideShift::lookForSortByDecided($lookForShiftIdsLoaded, $countOfDate);
 
         $templatePath = storage_path('app/templates/dh.xlsx');
         $spreadsheet = IOFactory::load($templatePath);

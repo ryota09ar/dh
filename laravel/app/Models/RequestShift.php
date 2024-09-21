@@ -22,4 +22,13 @@ class RequestShift extends Model
     public function lookForShift(){
         return $this->belongsTo(LookForShift::class);
     }
+
+    public static function requestShiftsLoaded(int $year, int $month, int $countOfDate)
+    {
+        $requestShiftsLoaded=[];
+        for ($i=1;$i<=$countOfDate;$i++){
+            $requestShiftsLoaded[$i]=RequestShift::whereYear("date", $year)->whereMonth('date', $month)->whereDay('date', $i)->orderBy("user_id", "asc")->get();
+        }
+        return $requestShiftsLoaded;
+    }
 }

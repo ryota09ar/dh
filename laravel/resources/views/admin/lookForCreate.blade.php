@@ -9,6 +9,11 @@
     <link rel="stylesheet" href="{{ asset("/css/yearMonthSelect.css") }}?v={{ time() }}">
     <link rel="stylesheet" href="{{ asset("/css/admin/lookForCreate.css") }}?v={{ time() }}">
     <title>look-for</title>
+    <script>
+        window.addEventListener('beforeunload', e=> {
+            e.preventDefault();
+        });
+    </script>
 </head>
 <body>
     <header>
@@ -43,6 +48,12 @@
                     </label>
                     <label for="month">月</label>
                     <button type="submit" class="renew">更新</button>
+                </form>
+                <form action="{{ route("shiftLookFor.confirm") }}" method="post" class="confirm_form">
+                    @csrf
+                    <input type="hidden" name="year" value={{ $year }}>
+                    <input type="hidden" name="month" value={{ $month }}>
+                    <button class="confirm_button">確定</button>
                 </form>
             </div>
 

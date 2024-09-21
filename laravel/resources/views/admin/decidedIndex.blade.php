@@ -29,9 +29,9 @@
                     @csrf
                     <label class="select-yearMonth">
                         <select id="year" name="year">
-                            @for($i=$year-1;$i<=$year+1;$i++)
-                                <option value={{$i}} {{ ($i==$year) ? "selected":"" }}>{{$i}}</option>
-                            @endfor
+                        @for($i=$year-1;$i<=$year+1;$i++)
+                            <option value={{$i}} {{ ($i==$year) ? "selected":"" }}>{{$i}}</option>
+                        @endfor
                         </select>
                     </label>
                     <label for="year">年</label>
@@ -54,7 +54,7 @@
                     @for($i=1;$i<=$countOfDate; $i++)
                         <tr>
                             <th>{{$i}}日 <span{!! ($daysOfWeek[$i]=="土") ? " class=\"Sat\"":(($daysOfWeek[$i]=="日") ? " class=\"Sun\"":"") !!}>{{$daysOfWeek[$i]}}</span></th>
-                        @for($j=0;$j<4;$j++)
+                            @for($j=0;$j<4;$j++)
                                 @if($lookForShiftIdsLoaded[$i][$j]!=0)
                                     <td>
                                         {{ ($place=\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->place).($time=\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->time)}}

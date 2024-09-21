@@ -5,10 +5,18 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <link rel="stylesheet" href="{{ asset("/css/header.css") }}?v={{ time() }}">
+    <title>password_edit</title>
 </head>
 <body>
-    <h1>パスワード変更</h1>
+    <header>
+        <div class="container">
+            <ol class="breadcrumb-004">
+                <li><a href="{{ route("login") }}">ログイン</a></li>
+                <li><a href="#">パスワード変更</a></li>
+            </ol>
+        </div>
+    </header>
     @if($errors->any())
         <div class="alert alert-danger">
             <ul>

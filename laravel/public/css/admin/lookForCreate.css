@@ -77,7 +77,12 @@ table{
     table.lookForTable td {
         display: block;
         width: 100%;
-        border-bottom:none;
+    }
+    .lookForTable td{
+        border-bottom: none;
+    }
+    .lookForTable th {
+        border: solid 3px #000; /* th要素の枠線を太く */
     }
     .lookForTable tr:last-child{
         border-bottom: solid 1px #ccc;
@@ -156,4 +161,27 @@ th{
     color: #fff;
     font-weight: 600;
     font-size: 1em;
+}
+
+.confirm_button {
+    justify-content: center;
+    align-items: center;
+    width: 80px;
+    margin: 0 auto;
+    padding: .6em 1em;
+    border: 1px solid #15a2bc;
+    border-radius: 5px;
+    background-color: #fbec40;
+    font-size: 1em;
+}
+
+.confirm_button:hover{
+    border: none;
+    background-color: #15a2bc;
+    color: #fff;
+    font-weight: 600;
+}
+
+.select-year-month .confirm_form{
+    margin-top: 5px;
 }

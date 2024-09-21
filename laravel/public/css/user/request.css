@@ -28,7 +28,12 @@ th, td{
     table.requestTable td {
         display: block;
         width: 100%;
-        border-bottom:none;
+    }
+    .requestTable td{
+        border-bottom: none;
+    }
+    .requestTable th {
+        border: solid 3px #000; /* th要素の枠線を太く */
     }
     .requestTable tr:last-child{
         border-bottom: solid 1px #ccc;
@@ -50,3 +55,4 @@ th{
 .checkbox-3 label:has(:checked)::after {
     left: 15px;
 }
+

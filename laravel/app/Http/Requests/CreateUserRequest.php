@@ -25,17 +25,18 @@ class CreateUserRequest extends FormRequest
             "family_name" => "required",
             "first_name" => "required",
             "email" => "required|unique:users",
-            "password" => "required",
+            "password" => "required|unique:users",
         ];
     }
 
     public function messages(){
         return [
-            "family_name.required"=>"名前",
-            "first_name.required"=>"名前",
-            "email.required"=>"メール",
+            "family_name.required"=>"名前を入力してください",
+            "first_name.required"=>"名前を入力してください",
+            "email.required"=>"メールを入力してください",
             "email.unique"=>"すでに存在するメールアドレスです",
-            "password.required"=>"パスワード",
+            "password.required"=>"パスワードを入力してください",
+            "password.unique"=>"他のパスワードにしてください"
         ];
     }
 }

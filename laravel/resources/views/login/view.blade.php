@@ -5,29 +5,42 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <link rel="stylesheet" href="{{ asset("/css/header.css") }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset("/css/login/view.css") }}?v={{ time() }}">
+    <title>login</title>
 </head>
 <body>
-    <h1>ログイン</h1>
-    @if($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach($errors->all() as $error)
-                    <li>{{$error}}</li>
-                @endforeach
-            </ul>
+    <header>
+        <div class="container">
+            <ol class="breadcrumb-004">
+                <li><a href="#">ログイン</a></li>
+            </ol>
         </div>
-    @endif
-    <form action="{{route("login.home")}}" method="post">
-        @csrf
-        <label for="name">メールアドレス</label>
-        <input id="email" name="email" type="email">
-        <label for="password">パスワード</label>
-        <input id="password" name="password" type="password">
-        <button>ログイン</button>
-    </form>
-    <a href="{{route("user.create")}}">新規登録</a>
-    <a href="{{route("user.edit")}}">パスワードを忘れた</a>
+    </header>
+    <main>
+        <div class="container">
+        @if($errors->has("invalid"))
+            <p class="alert alert-danger">{{ $errors->first("invalid") }}</p>
+        @endif
+            <form action="{{route("login.home")}}" method="post">
+                @csrf
+                <label for="name">メールアドレス</label>
+                @if($errors->has("email"))
+                    <p class="alert alert-danger">{{ $errors->first("email") }}</p>
+                @endif
+                <input id="email" name="email" type="email">
+                <label for="password">パスワード</label>
+                @if($errors->has("password"))
+                    <p class="alert alert-danger">{{ $errors->first("password") }}</p>
+                @endif
+                <input id="password" name="password" type="password">
+                <button>ログイン</button>
+            </form>
+            <a href="{{route("user.create")}}">新規登録</a>
+            <a href="{{route("user.edit")}}">パスワードを忘れた</a>
+        </div>
+    </main>
+
 
 </body>
 </html>

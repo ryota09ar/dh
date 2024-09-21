@@ -23,15 +23,15 @@ class LoginUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "email" => ["required", new OnlyDuplicate("users", "email")],
+            "email" => "required",
             "password" => "required",
         ];
     }
 
     public function messages(){
         return [
-            "email.required" => "Email is required",
-            "password.required" => "Password is required",
+            "email.required" => "メールアドレスを入力してください",
+            "password.required" => "パスワードを入力してください",
         ];
     }
 }

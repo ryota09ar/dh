@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ConfirmedYearMonth;
 use App\Models\LookForShift;
 use App\Models\Shift;
 use App\Models\ShiftContent;
@@ -55,13 +56,13 @@ class ShiftController extends Controller
     public function requestCreate(Request $request)
     {
         $user = Auth::user();
+        $year=$request['year'];
+        $month=$request['month'];
         $requestShiftsId = [];
         $requestShifts=$user->requestShift;
         foreach ($requestShifts as $requestShift) {
-            $requestShiftsId[]=$requestShift->look_for_shift_id;
+            $requestShiftsId[] = $requestShift->look_for_shift_id;
         }
-        $year=$request['year'];
-        $month=$request['month'];
         $countOfDate=$this->countOfDate($year, $month);
         $daysOfWeek=$this->daysOfWeek($year, $month, $countOfDate);
         $lookForShifts=LookForShift::whereYear('date',$year)->whereMonth('date',$month)->get();
@@ -79,6 +80,9 @@ class ShiftController extends Controller
     }
 
     public function requestStore(Request $request){
+        if (!ConfirmedYearMonth::is_confirmed($request["year"], $request["month"])) {
+            return redirect()->back()->withErrors(["yearMonth"=>"まだシフト募集が確定していないので提出できません"]);
+        }
         $selectedShifts = $request->input('lookForShiftIds', []);
         RequestShift::where("user_id", Auth::id())->whereYear("date", $request["year"])->whereMonth("date", $request["month"])->delete();
 

@@ -37,7 +37,12 @@ th, td{
     table.decideTable td {
         display: block;
         width: 100%;
-        border-bottom:none;
+    }
+    .decideTable td{
+        border-bottom: none;
+    }
+    .decideTable th {
+        border: solid 3px #000; /* th要素の枠線を太く */
     }
     .decideTable tr:last-child{
         border-bottom: solid 1px #ccc;

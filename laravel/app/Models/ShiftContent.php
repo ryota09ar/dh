@@ -18,7 +18,7 @@ class ShiftContent extends Model
         return $this->hasMany(Shift::class);
     }
 
-    public function lookUpForShift(){
+    public function lookForShift(){
         return $this->hasMany(LookForShift::class);
     }
 }

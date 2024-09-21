@@ -1,6 +1,11 @@
 .select-year-month{
+    display: flex;
     margin-bottom: 20px;
-    text-align: center;
+    justify-content: center;
+}
+
+.select-year-month form{
+    margin: 0 10px;
 }
 
 .select-yearMonth {

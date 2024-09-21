@@ -22,7 +22,7 @@
     </header>
     <main>
         <div class="container">
-            <p>{{$user->family_name.$user->first_name}}さん</p>
+            <p class="auth-name">{{$user->family_name.$user->first_name}}さん</p>
             <div class="select-year-month">
                 <form id="dataForm">
                     @csrf
@@ -46,6 +46,12 @@
                     <button type="submit" class="renew">更新</button>
                 </form>
             </div>
+
+            @if ($errors->has('yearMonth'))
+                <div class="alert alert-danger">
+                    {{ $errors->first('yearMonth') }}
+                </div>
+            @endif
 
             <div class="requestShift">
                 <form action="{{ route("shiftRequest.store") }}" method="post">

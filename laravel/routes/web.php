@@ -28,7 +28,6 @@ Route::post("users/edit/", [UserController::class, "update"])->name("user.update
 //login
 Route::get("login", [LoginController::class, "show"])->name("login");
 Route::post("login/", [LoginController::class, "login"])->name("login.home");
-Route::get("home", [UserController::class, "home"])->name("user.home");
 Route::get("logout", [LoginController::class, "logout"])->name("logout");
 
 //necessary login
@@ -50,6 +49,7 @@ Route::get("admin/menu", [ShiftAdminController::class, "show"])->name("admin.men
     Route::get("admin/shifts/lookFor", [ShiftAdminController::class, "lookForCreate"])->name("shiftLookFor.create");
     Route::post("admin/shifts/lookFor/", [ShiftAdminController::class, "lookForStore"])->name("shiftLookFor.store");
     Route::post("admin/shifts/lookFor/xlsxOutput", [ShiftAdminController::class, "exportLookForShiftsToExcel"])->name("shiftLookFor.excel");
+    Route::post("admin/shifts/lookFor/confirmed", [ShiftAdminController::class, "lookForConfirmation"])->name("shiftLookFor.confirm");
     //edit shift
     Route::get("admin/shifts/decide/create", [ShiftAdminController::class, "decideCreate"])->name("shiftDecide.create");
     Route::post("admin/shifts/decide/create/", [ShiftAdminController::class, "decideStore"])->name("shiftDecide.store");
