@@ -51,6 +51,9 @@ td{
 }
 
 @media (min-width: 600px) {
+    .day{
+        width: 100px;
+    }
     .decidedTable td{
         font-size: 15px;
     }

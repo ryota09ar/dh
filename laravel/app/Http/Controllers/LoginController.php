@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginAdminRequest;
 use App\Http\Requests\LoginUserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +16,7 @@ class LoginController extends Controller
     public function login(LoginUserRequest $request){
         $credentials=$request->validated();
 
-        if(Auth::attempt($credentials)){
+        if(Auth::guard('web')->attempt($credentials)){
             $request->session()->regenerate();
             return redirect()->route("user.home");
         }
@@ -30,5 +31,24 @@ class LoginController extends Controller
         Auth::logout();
 
         return redirect()->route('login');
+    }
+
+    public function adminShow(){
+        return view('login.admin');
+    }
+    public function adminLogin(LoginAdminRequest $request){
+        $credentials=$request->validated();
+        if(Auth::guard('admin')->attempt($credentials)){
+            $request->session()->regenerate();
+            return redirect()->route("admin.menu");
+        }
+        return back()->withErrors([
+            'invalid' => 'IDかパスワードが正しくありません',
+        ]);
+    }
+
+    public function adminLogout(){
+        Auth::logout();
+        return redirect()->route('admin.login');
     }
 }

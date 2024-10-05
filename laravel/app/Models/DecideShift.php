@@ -37,6 +37,7 @@ class DecideShift extends Model
     {
         for ($i=1;$i<=$countOfDate;$i++){
             for ($j=0;$j<4;$j++){
+                //実施する人がいる場所のみを表示する
                 if ($lookForShiftIdsLoaded[$i][$j]!=0
                     && !DecideShift::where("place", LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->place)
                         ->where("time", LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->time)

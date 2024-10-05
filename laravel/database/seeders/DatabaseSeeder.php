@@ -15,5 +15,6 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(ShiftContentsTableSeeder::class);
         $this->call(UsersTableSeeder::class);
+        $this->call(AdminsTableSeeder::class);
     }
 }

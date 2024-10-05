@@ -21,9 +21,9 @@
         <div class="container">
             <div class="menu">
                 <div class="menu-wrapper">
-                    <a href="{{ route("shiftLookFor.create", ['year' => (((int)date("n")==12) ? (int)date("Y")+1:(int)date("Y")), 'month' => (int)date("n")+1]) }}">シフト募集</a>
-                    <a href="{{ route("shiftDecide.create", ['year' => (((int)date("n")==12) ? (int)date("Y")+1:(int)date("Y")), 'month' => (int)date("n")+1]) }}">シフト編集</a>
-                    <a href="{{ route("shiftDecided.index", ['year' => (((int)date("n")==12) ? (int)date("Y")+1:(int)date("Y")), 'month' => (int)date("n")+1]) }}">シフト一覧</a>
+                    <a href="{{ route("shiftLookFor.create", ['year' => (((int)date("n")==12) ? (int)date("Y")+1:(int)date("Y")), 'month' => (((int)date("n")==12) ? 1:(int)date("n")+1)]) }}">シフト募集</a>
+                    <a href="{{ route("shiftDecide.create", ['year' => (((int)date("n")==12) ? (int)date("Y")+1:(int)date("Y")), 'month' => (((int)date("n")==12) ? 1:(int)date("n")+1)]) }}">シフト編集</a>
+                    <a href="{{ route("shiftDecided.index", ['year' => (((int)date("n")==12) ? (int)date("Y")+1:(int)date("Y")), 'month' => (((int)date("n")==12) ? 1:(int)date("n")+1)]) }}">シフト一覧</a>
                     <a href="{{ route("shiftPlace.index") }}">シフト場所編集</a>
                 </div>
             </div>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ConfirmedYearMonth;
 use App\Models\DecideShift;
+use App\Models\ExpiredYearMonth;
 use App\Models\LookForShift;
 use App\Models\RequestShift;
 use App\Models\ShiftContent;
@@ -12,7 +13,6 @@ use App\Services\UserService;
 use DateTime;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Color;
@@ -21,12 +21,21 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 class ShiftAdminController extends Controller
 {
     public function show(){
+        DecideShift::where("date", "<", now()->subyear())->delete();
+        RequestShift::where("date", "<", now()->submonth())->delete();
+        LookForShift::where("date", "<", now()->submonth(2))->delete();
+        ConfirmedYearMonth::where("created_at", "<", now()->submonth())->delete();
+        ExpiredYearMonth::where("created_at", "<", now()->submonth())->delete();
+        User::where("created_at", "<", now()->subyear(6))->delete();
         return view('admin.menu');
     }
 
     //edit place
     public function placeIndex(){
         $shift_contents = ShiftContent::orderBy("place", "asc")->get();
+        if (ShiftContent::all()->count() > 15) {
+            return redirect()->back()->withErrors(["overCount"=>"追加はせず既存のシフト場所を編集してください"]);
+        }
         return view('admin.placeIndex', compact('shift_contents'));
     }
 
@@ -130,6 +139,9 @@ class ShiftAdminController extends Controller
     }
 
     public function lookForStore(Request $request){
+        if (ConfirmedYearMonth::is_confirmed($request["year"], $request["month"])) {
+            return redirect()->back()->withErrors(["yearMonth"=>"すでに募集が確定しているので変更できません"]);
+        }
         for ($i=1; $i <= 31; $i++) {
             $str = $request["year"]."-".str_pad($request["month"],2, "0",STR_PAD_LEFT)."-".str_pad($i,2, "0",STR_PAD_LEFT);
             LookForShift::where("date", $str)->delete();
@@ -196,6 +208,12 @@ class ShiftAdminController extends Controller
 
     public function lookForConfirmation(Request $request)
     {
+        if (ConfirmedYearMonth::is_confirmed($request["year"], $request["month"])) {
+            return redirect()->back()->withErrors(["yearMonth"=>"すでに募集が確定しています"]);
+        }
+        if (!LookForShift::whereYear("date", $request["year"])->whereMonth("date", $request["month"])->exists()) {
+            return redirect()->back()->withErrors(["yearMonth"=>"どこか募集してください"]);
+        }
         ConfirmedYearMonth::create([
             "year"=>$request["year"],
             "month"=>$request["month"],
@@ -211,12 +229,16 @@ class ShiftAdminController extends Controller
         $countOfDate = $this->countOfDate($year, $month);
         $daysOfWeek = $this->daysOfWeek($year, $month, $countOfDate);
         $lookForShiftIdsLoaded = LookForShift::lookForShiftIdsLoaded($year, $month, $countOfDate);
-        $requestShiftsLoaded=RequestShift::requestShiftsLoaded($year, $month, $countOfDate);
+        $requestShiftsLoaded = RequestShift::requestShiftsLoaded($year, $month, $countOfDate);
+        $requestedUsers = RequestShift::requestedUsers($year, $month);
 
-        return view("admin.decideCreate", compact('year', 'month', 'countOfDate', 'daysOfWeek', "requestShiftsLoaded", "lookForShiftIdsLoaded"));
+        return view("admin.decideCreate", compact('year', 'month', 'countOfDate', 'daysOfWeek', "requestShiftsLoaded", "lookForShiftIdsLoaded", "requestedUsers"));
     }
 
     public function decideStore(Request $request){
+        if (!ExpiredYearMonth::is_expired($request["year"], $request["month"])) {
+            return redirect()->back()->withErrors(["yearMonth"=>"シフトを編集するには募集を締め切ってください"]);
+        }
         $year = $request['year'];
         $month = $request['month'];
         $countOfDate = $this->countOfDate($year, $month);
@@ -233,6 +255,23 @@ class ShiftAdminController extends Controller
             }
         }
 
+        return redirect()->route("admin.menu");
+    }
+
+    public function decideExpiration(Request $request){
+        if (!ConfirmedYearMonth::is_confirmed($request["year"], $request["month"])) {
+            return redirect()->back()->withErrors(["yearMonth"=>"先にシフト募集を確定させてください"]);
+        }
+        if (ExpiredYearMonth::is_expired($request["year"], $request["month"])) {
+            return redirect()->back()->withErrors(["yearMonth"=>"すでに締め切られてます"]);
+        }
+        if (!RequestShift::existsYearMonth($request["year"], $request["month"])) {
+            return redirect()->back()->withErrors(["yearMonth"=>"募集している人がいません"]);
+        }
+        ExpiredYearMonth::create([
+            "year"=>$request['year'],
+            "month"=>$request['month'],
+        ]);
         return redirect()->route("admin.menu");
     }
 

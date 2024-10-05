@@ -3,12 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\ConfirmedYearMonth;
+use App\Models\DecideShift;
+use App\Models\ExpiredYearMonth;
 use App\Models\LookForShift;
-use App\Models\Shift;
-use App\Models\ShiftContent;
 use App\Models\RequestShift;
-use App\Models\User;
-use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -58,30 +56,20 @@ class ShiftController extends Controller
         $user = Auth::user();
         $year=$request['year'];
         $month=$request['month'];
-        $requestShiftsId = [];
-        $requestShifts=$user->requestShift;
-        foreach ($requestShifts as $requestShift) {
-            $requestShiftsId[] = $requestShift->look_for_shift_id;
-        }
+        $requestShiftsId = RequestShift::requestShiftsId($user);
         $countOfDate=$this->countOfDate($year, $month);
         $daysOfWeek=$this->daysOfWeek($year, $month, $countOfDate);
-        $lookForShifts=LookForShift::whereYear('date',$year)->whereMonth('date',$month)->get();
-        $lookForShiftsLoaded=[];
-        for ($i=1;$i<=$countOfDate;$i++){
-            $lookForShiftsLoaded[$i]=[];
-        }
-        foreach ($lookForShifts as $lookForShift){
-            $date = new Carbon($lookForShift->date);
-            $day = $date->day;
-            $lookForShiftsLoaded[$day][]=$lookForShift;
-        }
+        $lookForShiftIdsLoaded=LookForShift::lookForShiftIdsLoaded($year, $month, $countOfDate);
 
-        return view('shift.requestCreate', compact( "user","year", "month", "lookForShiftsLoaded", "countOfDate", "daysOfWeek", "requestShiftsId"));
+        return view('shift.requestCreate', compact( "user","year", "month", "lookForShiftIdsLoaded", "countOfDate", "daysOfWeek", "requestShiftsId"));
     }
 
     public function requestStore(Request $request){
         if (!ConfirmedYearMonth::is_confirmed($request["year"], $request["month"])) {
             return redirect()->back()->withErrors(["yearMonth"=>"まだシフト募集が確定していないので提出できません"]);
+        }
+        if (ExpiredYearMonth::is_expired($request["year"], $request["month"])) {
+            return redirect()->back()->withErrors(["yearMonth"=>"すでに募集が締め切られてます"]);
         }
         $selectedShifts = $request->input('lookForShiftIds', []);
         RequestShift::where("user_id", Auth::id())->whereYear("date", $request["year"])->whereMonth("date", $request["month"])->delete();
@@ -95,5 +83,17 @@ class ShiftController extends Controller
         }
 
         return redirect()->route("user.home");
+    }
+
+    public function decidedIndex(Request $request){
+        $year = $request['year'];
+        $month = $request['month'];
+        $countOfDate = $this->countOfDate($year, $month);
+        $daysOfWeek = $this->daysOfWeek($year, $month, $countOfDate);
+        $decidedShifts = DecideShift::whereYear("date", $year)->whereMonth("date", $month)->get();
+        $lookForShiftIdsLoaded=LookForShift::lookForShiftIdsLoaded($year, $month, $countOfDate);
+        DecideShift::lookForSortByDecided($lookForShiftIdsLoaded, $countOfDate);
+
+        return view("shift.decidedIndex", compact('year', 'month', 'countOfDate', 'daysOfWeek', 'decidedShifts', 'lookForShiftIdsLoaded'));
     }
 }

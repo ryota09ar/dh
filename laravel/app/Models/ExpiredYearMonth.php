@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ConfirmedYearMonth extends Model
+class ExpiredYearMonth extends Model
 {
     use HasFactory;
 
@@ -19,7 +19,7 @@ class ConfirmedYearMonth extends Model
      * @param $month
      * @return bool
      */
-    public static function is_confirmed($year, $month): bool
+    public static function is_expired($year, $month): bool
     {
         return self::where('year', $year)->where('month', $month)->exists();
     }

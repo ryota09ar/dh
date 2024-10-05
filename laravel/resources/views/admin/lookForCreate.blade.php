@@ -53,10 +53,14 @@
                     @csrf
                     <input type="hidden" name="year" value={{ $year }}>
                     <input type="hidden" name="month" value={{ $month }}>
-                    <button class="confirm_button">確定</button>
+                    <button class="confirm_button">{{ (\App\Models\ConfirmedYearMonth::is_confirmed($year, $month) ? "確定済":"確定") }}</button>
                 </form>
             </div>
-
+            @if ($errors->has('yearMonth'))
+                <div class="alert alert-danger">
+                    {{ $errors->first('yearMonth') }}
+                </div>
+            @endif
             <div class="lookForShift">
                 <form id="form" method="post">
                     @csrf

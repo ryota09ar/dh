@@ -24,7 +24,7 @@
         @endif
             <form action="{{route("login.home")}}" method="post">
                 @csrf
-                <label for="name">メールアドレス</label>
+                <label for="email">メールアドレス</label>
                 @if($errors->has("email"))
                     <p class="alert alert-danger">{{ $errors->first("email") }}</p>
                 @endif

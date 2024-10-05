@@ -20,16 +20,15 @@ class LookForShift extends Model
     }
 
     public static function lookForShiftsLoaded(int $year, int $month, int $countOfDate){
-        $lookForShifts = self::whereYear('date',$year)->whereMonth('date',$month)->get();
         $lookForShiftsLoaded=[];
         for ($i=1;$i<=$countOfDate;$i++){
             $lookForShiftsLoaded[$i]=[0,0,0,0];
         }
         for ($i=1;$i<=$countOfDate;$i++){
             $pointer=0;
+            $lookForShifts = self::whereYear('date',$year)->whereMonth('date',$month)->whereDay("date", $i)->orderBy("shift_content_id", "asc")->get();
             foreach ($lookForShifts as $lookForShift) {
-                if ($lookForShift->date == $year . "-" . str_pad($month, 2, "0", STR_PAD_LEFT) . "-" . str_pad($i, 2, "0", STR_PAD_LEFT)
-                    && !in_array($lookForShift->shift_content_id, $lookForShiftsLoaded[$i])) {
+                if (!in_array($lookForShift->shift_content_id, $lookForShiftsLoaded[$i])) {
                     $lookForShiftsLoaded[$i][$pointer++]=$lookForShift->shift_content_id;
                 }
             }
@@ -39,16 +38,15 @@ class LookForShift extends Model
 
     public static function lookForShiftIdsLoaded(int $year, int $month, int $countOfDate)
     {
-        $lookForShifts = LookForShift::whereYear('date',$year)->whereMonth('date',$month)->orderBy("shift_content_id", "asc")->get();
         $lookForShiftIdsLoaded=[];
         for ($i=1;$i<=$countOfDate;$i++){
             $lookForShiftIdsLoaded[$i]=[0,0,0,0];
         }
         for ($i=1;$i<=$countOfDate;$i++){
             $pointer=0;
+            $lookForShifts = self::whereYear('date',$year)->whereMonth('date',$month)->whereDay("date", $i)->orderBy("shift_content_id", "asc")->get();
             foreach ($lookForShifts as $lookForShift) {
-                if ($lookForShift->date == $year . "-" . str_pad($month, 2, "0", STR_PAD_LEFT) . "-" . str_pad($i, 2, "0", STR_PAD_LEFT)
-                    && !in_array($lookForShift->shift_content_id, $lookForShiftIdsLoaded[$i])) {
+                if (!in_array($lookForShift->id, $lookForShiftIdsLoaded[$i])) {
                     $lookForShiftIdsLoaded[$i][$pointer++]=$lookForShift->id;
                 }
             }

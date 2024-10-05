@@ -6,6 +6,7 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{{ asset("/css/header.css") }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset("/css/login/view.css") }}?v={{ time() }}">
     <title>password_edit</title>
 </head>
 <body>
@@ -17,22 +18,25 @@
             </ol>
         </div>
     </header>
-    @if($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach($errors->all() as $error)
-                    <li>{{$error}}</li>
-                @endforeach
-            </ul>
+    <main>
+        <div class="container">
+            <form action="{{route("user.update")}}" method="post">
+                @csrf
+                <label for="email">メールアドレス</label>
+                @if($errors->has("email"))
+                    <p class="alert alert-danger">{{ $errors->first("email") }}</p>
+                @endif
+                <input id="email" name="email" type="email">
+                <label for="password">新しいパスワード</label>
+                @if($errors->has("password"))
+                    <p class="alert alert-danger">{{ $errors->first("password") }}</p>
+                @endif
+                <input id="password" name="password" type="password">
+                <button>変更する</button>
+            </form>
         </div>
-    @endif
-    <form action="{{route("user.update")}}" method="post">
-        @csrf
-        <label for="email">メールアドレス</label>
-        <input id="email" name="email" type="email">
-        <label for="password">新しいパスワード</label>
-        <input id="password" name="password" type="password">
-        <button>変更する</button>
-    </form>
+
+    </main>
+
 </body>
 </html>

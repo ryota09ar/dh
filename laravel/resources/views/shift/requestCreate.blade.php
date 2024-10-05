@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{{ asset("/css/header.css") }}?v={{ time() }}">
     <link rel="stylesheet" href="{{ asset("/css/yearMonthSelect.css") }}?v={{ time() }}">
     <link rel="stylesheet" href="{{ asset("/css/checkbox.css") }}?v={{ time() }}">
-    <link rel="stylesheet" href="{{ asset("/css/user/request.css") }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset("/css/shift/request.css") }}?v={{ time() }}">
     <title>request</title>
 </head>
 <body>
@@ -18,11 +18,11 @@
                 <li><a href="{{ route("user.home") }}">メニュー</a></li>
                 <li><a href="#">シフト提出</a></li>
             </ol>
+            <a href="{{route("logout")}}" class="logout">ログアウト</a>
         </div>
     </header>
     <main>
         <div class="container">
-            <p class="auth-name">{{$user->family_name.$user->first_name}}さん</p>
             <div class="select-year-month">
                 <form id="dataForm">
                     @csrf
@@ -63,14 +63,18 @@
                     @for($k=1;$k<=$countOfDate;$k++)
                         <tr>
                             <th>{{$k}}日 <span{!! ($daysOfWeek[$k]=="土") ? " class=\"Sat\"":(($daysOfWeek[$k]=="日") ? " class=\"Sun\"":"") !!}>{{$daysOfWeek[$k]}}</span></th>
-                            @foreach($lookForShiftsLoaded[$k] as $lookForShift)
-                                <td>
-                                    <fieldset class="checkbox-3">
-                                        <label>
-                                            <input id="shift" type="checkbox" name="lookForShiftIds[]" value={{ $lookForShift->id }} {{ in_array($lookForShift->id, $requestShiftsId) ? 'checked' : '' }}>{{$lookForShift->shiftContent->place.$lookForShift->shiftContent->time}}
-                                        </label>
-                                    </fieldset>
-                                </td>
+                            @foreach($lookForShiftIdsLoaded[$k] as $lookForShiftId)
+                                @if($lookForShiftId==0)
+                                    <td></td>
+                                @else
+                                    <td>
+                                        <fieldset class="checkbox-3">
+                                            <label>
+                                                <input id="shift" type="checkbox" name="lookForShiftIds[]" value={{ $lookForShiftId }} {{ in_array($lookForShiftId, $requestShiftsId) ? 'checked' : '' }}>{{\App\Models\LookForShift::find($lookForShiftId)->shiftContent->place.\App\Models\LookForShift::find($lookForShiftId)->shiftContent->time}}
+                                            </label>
+                                        </fieldset>
+                                    </td>
+                                @endif
                             @endforeach
                         </tr>
                     @endfor

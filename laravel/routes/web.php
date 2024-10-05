@@ -31,14 +31,21 @@ Route::post("login/", [LoginController::class, "login"])->name("login.home");
 Route::get("logout", [LoginController::class, "logout"])->name("logout");
 
 //necessary login
-Route::middleware('auth')->group(function () {
+Route::group(['middleware' => ['auth:web']], function () {
     Route::get("users/home", [UserController::class, "home"])->name("user.home");
     Route::get("users/request/create", [ShiftController::class, "requestCreate"])->name("shiftRequest.create");
     Route::post("users/request/create/", [ShiftController::class, "requestStore"])->name("shiftRequest.store");
+    Route::get("users/shifts/index", [ShiftController::class, "decidedIndex"])->name("decided.index");
 });
 
+//admin login
+Route::get("admin/login", [LoginController::class, "adminShow"])->name("admin.login");
+Route::post("admin/login/", [LoginController::class, "adminLogin"])->name("admin.login.home");
+Route::get("admin/logout", [LoginController::class, "adminLogout"])->name("admin.logout");
+
 //admin
-Route::get("admin/menu", [ShiftAdminController::class, "show"])->name("admin.menu");
+Route::group(['middleware' => ['auth:admin']], function () {
+    Route::get("admin/menu", [ShiftAdminController::class, "show"])->name("admin.menu");
     //edit place
     Route::get("admin/shifts/place", [ShiftAdminController::class, "placeIndex"])->name("shiftPlace.index");
     Route::get("admin/shifts/place/create", [ShiftAdminController::class, "placeCreate"])->name("shiftPlace.create");
@@ -53,7 +60,8 @@ Route::get("admin/menu", [ShiftAdminController::class, "show"])->name("admin.men
     //edit shift
     Route::get("admin/shifts/decide/create", [ShiftAdminController::class, "decideCreate"])->name("shiftDecide.create");
     Route::post("admin/shifts/decide/create/", [ShiftAdminController::class, "decideStore"])->name("shiftDecide.store");
+    Route::post("admin/shifts/decide/create/expiration", [ShiftAdminController::class, "decideExpiration"])->name("shiftDecide.expiration");
     //index shift
     Route::get("admin/shifts/index", [ShiftAdminController::class, "decidedIndex"])->name("shiftDecided.index");
     Route::post("admin_shifts/index/excelOutput", [ShiftAdminController::class, "exportDecidedShiftsToExcel"])->name("shiftDecided.excel");
-
+});

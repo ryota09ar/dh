@@ -20,6 +20,11 @@
     </header>
     <main>
         <div class="container">
+        @if ($errors->has('overCount'))
+            <div class="alert alert-danger">
+                {{ $errors->first('overCount') }}
+            </div>
+        @endif
             <div class="buttons">
             @foreach($shift_contents as $shift_content)
                 <a href="{{route("shiftPlace.edit", ["id"=>$shift_content->id]) }}" class="button-51">{{$shift_content->place.$shift_content->time}}</a>

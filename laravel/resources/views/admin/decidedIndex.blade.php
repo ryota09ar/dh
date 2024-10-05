@@ -10,7 +10,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{{ asset("/css/header.css") }}?v={{ time() }}">
     <link rel="stylesheet" href="{{ asset("/css/yearMonthSelect.css") }}?v={{ time() }}">
-    <link rel="stylesheet" href="{{ asset("/css/admin/decidedCreate.css") }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset("/css/admin/decidedIndex.css") }}?v={{ time() }}">
     <title>decidedIndex</title>
 </head>
 <body>
@@ -53,7 +53,7 @@
                 <table class="decidedTable">
                     @for($i=1;$i<=$countOfDate; $i++)
                         <tr>
-                            <th>{{$i}}日 <span{!! ($daysOfWeek[$i]=="土") ? " class=\"Sat\"":(($daysOfWeek[$i]=="日") ? " class=\"Sun\"":"") !!}>{{$daysOfWeek[$i]}}</span></th>
+                            <th class="day">{{$i}}日 <span{!! ($daysOfWeek[$i]=="土") ? " class=\"Sat\"":(($daysOfWeek[$i]=="日") ? " class=\"Sun\"":"") !!}>{{$daysOfWeek[$i]}}</span></th>
                             @for($j=0;$j<4;$j++)
                                 @if($lookForShiftIdsLoaded[$i][$j]!=0)
                                     <td>

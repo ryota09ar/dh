@@ -14,6 +14,11 @@
     <link rel="stylesheet" href="{{ asset("/css/admin/decideCreate.css") }}?v={{ time() }}">
 
     <title>decideCreate</title>
+    <script>
+        window.addEventListener('beforeunload', e=> {
+            e.preventDefault();
+        });
+    </script>
 </head>
 <body>
     <header>
@@ -48,8 +53,18 @@
                     <label for="month">月</label>
                     <button type="submit" class="renew">更新</button>
                 </form>
+                <form action="{{ route("shiftDecide.expiration") }}" method="post" class="expire_form">
+                    @csrf
+                    <input type="hidden" name="year" value={{ $year }}>
+                    <input type="hidden" name="month" value={{ $month }}>
+                    <button class="expire_button">{{ (\App\Models\ExpiredYearMonth::is_expired($year, $month) ? "締切済":"締切") }}</button>
+                </form>
             </div>
-
+            @if ($errors->has('yearMonth'))
+                <div class="alert alert-danger">
+                    {{ $errors->first('yearMonth') }}
+                </div>
+            @endif
             <div class="decideShift">
                 <form action="{{ route("shiftDecide.store") }}" method="post" id="checkboxForm">
                     @csrf
@@ -67,29 +82,29 @@
                                 @if($lookForShiftIdsLoaded[$i][$j]==0)
                                     <td></td>
                                 @else
-                                <td>
-                                    {{ \App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->place }}
-                                    <br>
-                                    <fieldset class="checkbox-3">
-                                    @foreach($requestShiftsLoaded[$i] as $requestShift)
-                                        @if($lookForShiftIdsLoaded[$i][$j]==$requestShift->look_for_shift_id)
-                                            @php
-                                                $k=false;
-                                                foreach ($decideShifts as $decideShift){
-                                                    if ($decideShift->user_id==$requestShift->user_id && $decideShift->date==$requestShift->date
-                                                        && $decideShift->place==$requestShift->lookForShift->shiftContent->place && $decideShift->time==$requestShift->lookForShift->shiftContent->time){
-                                                        $k=true;
-                                                        break;
+                                    <td>
+                                        {{ \App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->place.\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->time }}
+                                        <br>
+                                        <fieldset class="checkbox-3">
+                                        @foreach($requestShiftsLoaded[$i] as $requestShift)
+                                            @if($lookForShiftIdsLoaded[$i][$j]==$requestShift->look_for_shift_id)
+                                                @php
+                                                    $k=false;
+                                                    foreach ($decideShifts as $decideShift){
+                                                        if ($decideShift->user_id==$requestShift->user_id && $decideShift->date==$requestShift->date
+                                                            && $decideShift->place==$requestShift->lookForShift->shiftContent->place && $decideShift->time==$requestShift->lookForShift->shiftContent->time){
+                                                            $k=true;
+                                                            break;
+                                                        }
                                                     }
-                                                }
-                                            @endphp
-                                            <label>
-                                                <input id="shift" type="checkbox" class="checkbox" name="decideShifts_{{ $i }}[]" data-option="{{ $requestShift->user_id }}"  value={{ $requestShift->id }}  {{ ($k) ? "checked":"" }}>{{UserService::return_name($requestShift->user_id)}}
-                                            </label>
-                                        @endif
-                                    @endforeach
-                                    </fieldset>
-                                </td>
+                                                @endphp
+                                                <label>
+                                                    <input id="shift" type="checkbox" class="checkbox" name="decideShifts_{{ $i }}[]" data-option="{{ $requestShift->user_id }}"  value={{ $requestShift->id }}  {{ ($k) ? "checked":"" }}>{{UserService::return_name($requestShift->user_id)}}
+                                                </label>
+                                            @endif
+                                        @endforeach
+                                        </fieldset>
+                                    </td>
                                 @endif
                             @endfor
                         </tr>
@@ -99,22 +114,22 @@
                         <thead>
                         <tr>
                             <th></th>
-                            @foreach($users=\App\Models\User::all() as $user)
-                                <th>{{ UserService::return_name($user->id) }}</th>
+                            @foreach($requestedUsers as $user)
+                                <th>{{ UserService::return_name($user->first()->id) }}</th>
                             @endforeach
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
                             <th>希望数</th>
-                            @foreach($users as $user)
-                                <th>{{ \App\Models\RequestShift::whereYear('date',$year)->whereMonth('date',$month)->where("user_id", $user->id)->count() }}</th>
+                            @foreach($requestedUsers as $user)
+                                <th>{{ \App\Models\RequestShift::whereYear('date',$year)->whereMonth('date',$month)->where("user_id", $user->first()->id)->count() }}</th>
                             @endforeach
                         </tr>
                         <tr>
                             <th>実施数</th>
-                            @foreach($users as $user)
-                                <th><span id="checkedUser{{ $user->id }}Count">0</span></th>
+                            @foreach($requestedUsers as $user)
+                                <th><span id="checkedUser{{ $user->first()->id }}Count">0</span></th>
                             @endforeach
                         </tr>
                         </tbody>
@@ -130,16 +145,16 @@
         // チェックボックスのフォーム要素を取得
         const checkboxForm = document.getElementById('checkboxForm');
         // Option 1 のチェックされている数を表示する要素を取得
-        @foreach($users as $user)
-            const checkedUser{{ $user->id }}CountDisplay = document.getElementById('checkedUser{{ $user->id }}Count');
+        @foreach($requestedUsers as $user)
+            const checkedUser{{ $user->first()->id }}CountDisplay = document.getElementById('checkedUser{{ $user->first()->id }}Count');
         @endforeach
         // チェックボックスが変更されるたびにカウントを更新する関数
         function updateCheckedUserCount() {
             // フォーム内のすべてのOption 1のチェックボックスを取得
-            @foreach($users as $user)
-                const user{{ $user->id }}Checkboxes = checkboxForm.querySelectorAll('.checkbox[data-option="{{ $user->id }}"]');
+            @foreach($requestedUsers as $user)
+                const user{{ $user->first()->id }}Checkboxes = checkboxForm.querySelectorAll('.checkbox[data-option="{{ $user->first()->id }}"]');
                 // チェックされたOption 1の数を表示
-                checkedUser{{ $user->id }}CountDisplay.textContent = Array.from(user{{ $user->id }}Checkboxes).filter(checkbox => checkbox.checked).length.toString();
+                checkedUser{{ $user->first()->id }}CountDisplay.textContent = Array.from(user{{ $user->first()->id }}Checkboxes).filter(checkbox => checkbox.checked).length.toString();
             @endforeach
         }
         // チェックボックスの状態が変わったときに関数を呼び出す

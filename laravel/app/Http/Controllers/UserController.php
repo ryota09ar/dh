@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateUserRequest;
+use App\Http\Requests\EditUserRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -31,11 +31,8 @@ class UserController extends Controller
         return view("user.edit");
     }
 
-    public function update(Request $request){
-        $credentials = $request->validate([
-            "email"=>["required", "email"],
-            "password"=>"required"
-        ]);
+    public function update(EditUserRequest $request){
+        $credentials = $request->validated();
 
         $user = User::where('email', $credentials['email'])->first();
 
@@ -45,9 +42,7 @@ class UserController extends Controller
             return redirect()->route('user.updateComplete');
         } else {
             // ユーザーが見つからない場合の処理
-            return redirect()->back()->withErrors([
-                "email"=>"メールアドレスが正しくありません"
-            ]);
+            return redirect()->back();
         }
     }
 
