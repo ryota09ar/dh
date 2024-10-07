@@ -63,5 +63,5 @@ Route::group(['middleware' => ['auth:admin']], function () {
     Route::post("admin/shifts/decide/create/expiration", [ShiftAdminController::class, "decideExpiration"])->name("shiftDecide.expiration");
     //index shift
     Route::get("admin/shifts/index", [ShiftAdminController::class, "decidedIndex"])->name("shiftDecided.index");
-    Route::post("admin_shifts/index/excelOutput", [ShiftAdminController::class, "exportDecidedShiftsToExcel"])->name("shiftDecided.excel");
+    Route::post("admin/shifts/index/excelOutput", [ShiftAdminController::class, "exportDecidedShiftsToExcel"])->name("shiftDecided.excel");
 });
