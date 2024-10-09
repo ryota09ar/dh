@@ -1,12 +1,21 @@
-.select-year-month{
-    display: flex;
-    gap: 5px;
-    margin-bottom: 20px;
-    justify-content: center;
+@media (min-width: 450px) {
+    .select-year-month{
+        display: flex;
+        gap: 5px;
+        margin-bottom: 20px;
+        justify-content: center;
+    }
 }
-
-.select-form{
-    width: 335px;
+@media (max-width: 450px) {
+    .select-year-month{
+        display: flex;
+        flex-direction: column;
+        margin: 0 auto 5px auto;
+        justify-content: center;
+    }
+    .select-year-month form{
+        margin: 0 auto;
+    }
 }
 
 .select {

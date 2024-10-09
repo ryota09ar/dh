@@ -28,7 +28,7 @@
     <main>
         <div class="container">
             <div class="select-year-month">
-                <form id="dataForm" class="select-form">
+                <form id="dataForm">
                     @csrf
                     <label class="select year">
                         <select id="year" name="year">
