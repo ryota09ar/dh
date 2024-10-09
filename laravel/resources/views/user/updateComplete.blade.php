@@ -5,10 +5,21 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <link rel="stylesheet" href="{{ asset("/css/header.css") }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset("/css/user/updateComplete.css") }}?v={{ time() }}">
+    <title>updateComplete</title>
 </head>
 <body>
-<h1>パスワード変更完了</h1>
-<a href="{{route("login")}}">ログインへ</a>
+<header>
+    <div class="container">
+        <ol class="breadcrumb-004">
+            <li><a href="{{ route("user.home") }}">メニュー</a></li>
+        </ol>
+    </div>
+</header>
+<main>
+    <h1>パスワード変更完了♪</h1>
+    <a href="{{route("login")}}">ログインへ</a>
+</main>
 </body>
 </html>

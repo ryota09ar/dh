@@ -22,9 +22,6 @@ th, td{
     text-align:center;
     box-sizing:border-box;
 }
-.decideTable td:has(input){
-    width: 25%;
-}
 
 @media screen and (max-width: 1050px) {
     .decideShift{

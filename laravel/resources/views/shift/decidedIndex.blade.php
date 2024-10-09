@@ -14,14 +14,14 @@
     <title>decidedIndex</title>
 </head>
 <body>
-<header>
-    <div class="container">
-        <ol class="breadcrumb-004">
-            <li><a href="{{ route("user.home") }}">メニュー</a></li>
-            <li><a href="#">シフト一覧</a></li>
-        </ol>
-    </div>
-</header>
+    <header>
+        <div class="container">
+            <ol class="breadcrumb-004">
+                <li><a href="{{ route("user.home") }}">メニュー</a></li>
+                <li><a href="#">シフト一覧</a></li>
+            </ol>
+        </div>
+    </header>
 <main>
     <div class="container">
         <div class="select-year-month">
@@ -71,12 +71,6 @@
                     </tr>
                 @endfor
             </table>
-            <form action="{{route("shiftDecided.excel")}}" method="post" class="excel-form">
-                @csrf
-                <input type="hidden" name="year" value={{ $year }}>
-                <input type="hidden" name="month" value={{ $month }}>
-                <button class="excel">Excel出力</button>
-            </form>
         </div>
     </div>
 </main>

@@ -83,7 +83,7 @@
                                     <td></td>
                                 @else
                                     <td>
-                                        {{ \App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->place.\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->time }}
+                                        {{ \App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->place." ".\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->time }}
                                         <br>
                                         <fieldset class="checkbox-3">
                                         @foreach($requestShiftsLoaded[$i] as $requestShift)
