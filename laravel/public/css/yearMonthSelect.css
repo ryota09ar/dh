@@ -1,27 +1,24 @@
 .select-year-month{
     display: flex;
+    gap: 5px;
     margin-bottom: 20px;
     justify-content: center;
 }
 
-.select-year-month form{
-    margin: 0 10px;
-}
 
-.select-yearMonth {
+.select {
     position: relative;
-    margin-left: 20px;
-    margin-right: 5px;
+    margin: 0 5px;
 }
 
-.select-yearMonth::before,
-.select-yearMonth::after {
+.select::before,
+.select::after {
     position: absolute;
     content: '';
     pointer-events: none;
 }
 
-.select-yearMonth::before {
+.select::before {
     right: 0;
     display: inline-block;
     width: 2.8em;
@@ -31,7 +28,7 @@
     content: '';
 }
 
-.select-yearMonth::after {
+.select::after {
     position: absolute;
     top: 50%;
     right: 1.4em;
@@ -43,11 +40,11 @@
     content: '';
 }
 
-.select-yearMonth select {
+.select.year select {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    min-width: 110px;
+    width: 114px;
     height: 2.8em;
     padding: .6em 3.6em .4em .8em;
     border: 2px solid #15a2bc;
@@ -57,16 +54,29 @@
     cursor: pointer;
 }
 
-.select-yearMonth select:focus {
+.select.month select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 90px;
+    height: 2.8em;
+    padding: .6em 3.6em .4em .8em;
+    border: 2px solid #15a2bc;
+    border-radius: 25px;
+    color: #333333;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.select select:focus {
     outline: 1px solid #15a2bc;
 }
 
 .renew {
     justify-content: center;
     align-items: center;
-    width: 80px;
-    margin: 0 auto;
-    padding: .6em 1em;
+    width: 60px;
+    padding: .6em 5px;
     border: 1px solid #15a2bc;
     border-radius: 5px;
     background-color: #fff;

@@ -26,7 +26,7 @@
             <div class="select-year-month">
                 <form id="dataForm">
                     @csrf
-                    <label class="select-yearMonth">
+                    <label class="select year">
                         <select id="year" name="year">
                             @for($i=$year-1;$i<=$year+1;$i++)
                                 <option value={{$i}} {{ ($i==$year) ? "selected":"" }}>{{$i}}</option>
@@ -35,7 +35,7 @@
                     </label>
                     <label for="year">年</label>
 
-                    <label class="select-yearMonth">
+                    <label class="select month">
                         <select id="month" name="month">
                             @for($i=1;$i<=12;$i++)
                                 <option value={{$i}} {{ ($i==$month) ? "selected":"" }}>{{$i}}</option>
