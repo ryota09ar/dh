@@ -5,7 +5,6 @@
 .select-box::before,
 .select-box::after {
     position: absolute;
-    top: -7.7px;
     content: '';
     pointer-events: none;
 }
