@@ -33,7 +33,7 @@ th, td{
     table.decideTable th,
     table.decideTable td {
         display: block;
-        width: 100%;
+        width: 80%;
     }
     .decideTable td{
         border-bottom: none;
