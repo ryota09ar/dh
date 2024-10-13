@@ -79,7 +79,8 @@
                         </tr>
                     @endfor
                     </table>
-
+                    <label id="requestCount">希望回数</label>
+                    <input id="requestCount" name="requestCount" type="number">
                     <button class="submit_button">提出</button>
                 </form>
             </div>

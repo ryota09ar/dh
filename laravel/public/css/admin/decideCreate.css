@@ -2,17 +2,23 @@
     display: flex;
     justify-content: center;
     position: relative;
-    margin:30px 50px;
+    margin:30px auto;
+}
+
+.decideShift form{
+    display: flex;
+    flex-direction: column;
 }
 
 .decideTable{
     border-collapse: collapse;
-    width: 100%;
+    justify-content: center;
+    width: 90%;
     margin-bottom: 50px;
 }
 
 .countTable{
-    margin: 0 auto;
+    justify-content: center;
     border-collapse: collapse;
 }
 
@@ -28,7 +34,7 @@ th, td{
         margin: 0 20px;
     }
     .decideTable {
-        width: 100%;
+        width: 90%;
     }
     table.decideTable th,
     table.decideTable td {
@@ -67,11 +73,12 @@ th{
 }
 
 .expire_button {
+    display: flex;
     justify-content: center;
     align-items: center;
     width: 80px;
     margin: 0 auto;
-    padding: .6em 1em;
+    padding: .6em 0;
     border: 1px solid #15a2bc;
     border-radius: 5px;
     background-color: #f80f22;

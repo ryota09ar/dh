@@ -121,7 +121,7 @@
                         </thead>
                         <tbody>
                         <tr>
-                            <th>希望数</th>
+                            <th>提出数</th>
                             @foreach($requestedUsers as $user)
                                 <th>{{ \App\Models\RequestShift::whereYear('date',$year)->whereMonth('date',$month)->where("user_id", $user->first()->id)->count() }}</th>
                             @endforeach
