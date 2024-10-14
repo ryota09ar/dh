@@ -9,18 +9,20 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    margin:0 auto;
 }
 
 .decideTable{
     border-collapse: collapse;
     justify-content: center;
     width: 90%;
-    margin-bottom: 50px;
+    margin: 0 auto;
 }
 
 .countTable{
     justify-content: center;
     border-collapse: collapse;
+    margin-top: 50px;
 }
 
 th, td{
