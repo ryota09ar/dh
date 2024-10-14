@@ -8,6 +8,7 @@
 .decideShift form{
     display: flex;
     flex-direction: column;
+    justify-content: center;
 }
 
 .decideTable{
@@ -31,7 +32,7 @@ th, td{
 
 @media screen and (max-width: 1050px) {
     .decideShift{
-        margin: 0 auto;
+        margin: 0;
     }
     .decideTable {
         width: 90%;
@@ -39,7 +40,7 @@ th, td{
     table.decideTable th,
     table.decideTable td {
         display: block;
-        width: 80%;
+        width: 100%;
     }
     .decideTable td{
         border-bottom: none;
