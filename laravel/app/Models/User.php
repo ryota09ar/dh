@@ -13,6 +13,7 @@ class User extends Authenticatable
         "id",
         'family_name',
         'first_name',
+        'dh_staff',
         'email',
         "password"
     ];
@@ -20,5 +21,10 @@ class User extends Authenticatable
     public function requestShift()
     {
         return $this->hasMany(RequestShift::class);
+    }
+
+    public function requestCount()
+    {
+        return $this->hasMany(RequestCount::class);
     }
 }

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('family_name');
             $table->string('first_name');
+            $table->tinyInteger("dh_staff");
             $table->string("email")->unique();
             $table->string("password");
             $table->rememberToken();

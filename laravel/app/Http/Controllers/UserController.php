@@ -19,6 +19,7 @@ class UserController extends Controller
         User::create([
             "family_name"=>$validated["family_name"],
             "first_name"=>$validated['first_name'],
+            "dh_staff"=>$validated['dh_staff'],
             "email"=>$validated['email'],
             "password"=>Hash::make($validated['password'])
         ]);

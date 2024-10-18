@@ -12,7 +12,7 @@
     gap: 0 .5em;
     position: relative;
     margin-bottom: .4em;
-    padding: .5em .7em;
+    padding: .5em .3em .5em .7em;
     border: 1px solid #15a2bc;
     border-radius: 3px;
     background-color: #2589d026;
@@ -34,7 +34,7 @@
 
 .checkbox-3 label:has(:checked)::after {
     position: absolute;
-    top: 14px;
+    top: 35%;
     transform: rotate(45deg);
     width: 4px;
     height: 8px;
@@ -43,7 +43,8 @@
     content: '';
 }
 
-.checkbox-3 input {
+.checkbox-3 .checkbox,
+.checkbox-3 .mainCheckbox {
     display: none;
 }
 
@@ -66,4 +67,9 @@
 .submit_button:hover {
     transform: translateY(3px);
     border-bottom-width: 2px;
+}
+
+.sub-checkbox{
+    position: absolute;
+    right: .6em;
 }

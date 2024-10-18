@@ -4,13 +4,13 @@ main{
 
 .buttons{
     display: flex;
+    gap: 20px;
     flex-wrap: wrap;
     width: 70%;
     margin:10px auto;
 }
 
 .button-51 {
-    display: flex;
     justify-content: center;
     position: relative;
     width: 200px;

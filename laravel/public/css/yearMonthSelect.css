@@ -58,7 +58,7 @@
     -moz-appearance: none;
     width: 114px;
     height: 2.8em;
-    padding: .6em 3.6em .4em .8em;
+    padding: .6em 3.6em .4em .6em;
     border: 2px solid #15a2bc;
     border-radius: 25px;
     color: #333333;
@@ -72,7 +72,7 @@
     -moz-appearance: none;
     width: 90px;
     height: 2.8em;
-    padding: .6em 3.6em .4em .8em;
+    padding: .6em 3.6em .4em .6em;
     border: 2px solid #15a2bc;
     border-radius: 25px;
     color: #333333;
@@ -86,9 +86,9 @@
 
 .renew {
     justify-content: center;
-    align-items: center;
     width: 60px;
-    padding: .6em 5px;
+    height: 40px;
+    padding: .5em 5px;
     border: 1px solid #15a2bc;
     border-radius: 5px;
     background-color: #fff;

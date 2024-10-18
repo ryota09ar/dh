@@ -128,11 +128,8 @@ class ShiftAdminController extends Controller
         $year = $request['year'];
         $month = $request['month'];
         $shift_contents = ShiftContent::orderBy("place", "asc")->orderBy("time", "asc")->get();
-
         $countOfDate = $this->countOfDate($year, $month);
-
         $daysOfWeek = $this->daysOfWeek($year, $month, $countOfDate);
-
         $lookForShiftsLoaded = LookForShift::lookForShiftsLoaded($year, $month, $countOfDate);
 
         return view('admin.lookForCreate', compact('shift_contents', "year", "month", "lookForShiftsLoaded", "countOfDate", "daysOfWeek"));
@@ -244,13 +241,16 @@ class ShiftAdminController extends Controller
         $countOfDate = $this->countOfDate($year, $month);
         DecideShift::whereYear("date", $year)->whereMonth("date", $month)->delete();
         for ($i=1;$i<=$countOfDate;$i++){
+            $index_number = 0;
+            $makeDhByOneself = $request->input("makeDhByOneself_$i", []);
             foreach($request->input("decideShifts_$i", []) as $decideShiftId){
-                $decideShift=RequestShift::find($decideShiftId);
+                $requestShift=RequestShift::find($decideShiftId);
                 DecideShift::create([
-                    "user_id" => $decideShift->user_id,
-                    "date" => $decideShift->date,
-                    "place" => $decideShift->lookForShift->shiftContent->place,
-                    "time" => $decideShift->lookForShift->shiftContent->time,
+                    "user_id" => $requestShift->user_id,
+                    "date" => $requestShift->date,
+                    "place" => $requestShift->lookForShift->shiftContent->place,
+                    "time" => $requestShift->lookForShift->shiftContent->time,
+                    "makeDhByOneself" => $makeDhByOneself[$index_number++],
                 ]);
             }
         }

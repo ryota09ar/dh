@@ -26,12 +26,12 @@
                 @if($errors->has("email"))
                     <p class="alert alert-danger">{{ $errors->first("email") }}</p>
                 @endif
-                <input id="email" name="email" type="email">
+                <input id="email" name="email" type="email" required>
                 <label for="password">新しいパスワード</label>
                 @if($errors->has("password"))
                     <p class="alert alert-danger">{{ $errors->first("password") }}</p>
                 @endif
-                <input id="password" name="password" type="password">
+                <input id="password" name="password" type="password" required>
                 <button>変更する</button>
             </form>
         </div>

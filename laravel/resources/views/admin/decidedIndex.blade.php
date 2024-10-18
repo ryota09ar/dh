@@ -50,6 +50,7 @@
             </div>
 
             <div class="decidedIndex">
+                <h3>{{ $year }}年 {{ $month }}月</h3>
                 <table class="decidedTable">
                     @for($i=1;$i<=$countOfDate; $i++)
                         <tr>

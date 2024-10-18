@@ -28,12 +28,12 @@
                 @if($errors->has("email"))
                     <p class="alert alert-danger">{{ $errors->first("email") }}</p>
                 @endif
-                <input id="email" name="email" type="email">
+                <input id="email" name="email" type="email" required>
                 <label for="password">パスワード</label>
                 @if($errors->has("password"))
                     <p class="alert alert-danger">{{ $errors->first("password") }}</p>
                 @endif
-                <input id="password" name="password" type="password">
+                <input id="password" name="password" type="password" required>
                 <button>ログイン</button>
             </form>
             <a href="{{route("user.create")}}">新規登録</a>
