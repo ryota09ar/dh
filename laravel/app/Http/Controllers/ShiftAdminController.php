@@ -322,11 +322,16 @@ class ShiftAdminController extends Controller
                     foreach ($decidedShifts as $decidedShift){
                         if($decidedShift->place==$place && $decidedShift->time==$time && $decidedShift->date==\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->date){
                             $cellValue.=" ".UserService::return_name($decidedShift->user_id);
+                            if ($decidedShift->makeDhByOneself){
+                                $cellValue.="○";
+                            }
                         }
                     }
                     $sheet->setCellValue($column.($i+3), $cellValue);
-                    if(mb_strlen($cellValue)>21){
+                    if(mb_strlen($cellValue)>23){
                         $sheet->getStyle($column++.($i+3))->getFont()->setSize(5);
+                    } else if(mb_strlen($cellValue)>19){
+                        $sheet->getStyle($column++.($i+3))->getFont()->setSize(5.5);
                     } else{
                         $sheet->getStyle($column++.($i+3))->getFont()->setSize(6);
                     }
@@ -339,6 +344,7 @@ class ShiftAdminController extends Controller
         }
         $sheet->getStyle('B4:G34')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('B4:G34')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        $sheet->getStyle('B4:G34')->getFont()->setName('Arial Unicode MS');
 
         $newFileName = "decided_shift_{$year}_{$month}.xlsx";
         $writer = new Xlsx($spreadsheet);
