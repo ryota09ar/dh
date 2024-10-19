@@ -107,7 +107,7 @@
                                                 <label>
                                                     @if($requestShift->user->dh_staff)
                                                         <input type="checkbox" class="mainCheckbox" name="decideShifts_{{ $i }}[]" data-option="{{ $requestShift->user_id }}"  value={{ $requestShift->id }}  {{ ($k) ? "checked":"" }}>{{UserService::return_name($requestShift->user_id)}}
-                                                        <input type="checkbox" class="sub-checkbox" disabled {{ $makeDh ? "checked":"" }}>
+                                                        <input type="checkbox" class="sub-checkbox" data-option="{{ $requestShift->user_id }}" disabled {{ $makeDh ? "checked":"" }}>
                                                         <input type="hidden" class="submitValue" name="makeDhByOneself_{{ $i }}[]" value=0 disabled>
                                                     @else
                                                         <input type="checkbox" class="mainCheckbox" name="decideShifts_{{ $i }}[]" data-option="{{ $requestShift->user_id }}"  value={{ $requestShift->id }}  {{ ($k) ? "checked":"" }}>{{UserService::return_name($requestShift->user_id)}}
@@ -148,7 +148,10 @@
                         <tr>
                             <th>実施数</th>
                             @foreach($requestedUsers as $user)
-                                <td><span id="checkedUser{{ $user->first()->id }}Count">0</span></td>
+                                <td>
+                                    <span id="checkedUser{{ $user->first()->id }}Count">0</span>
+                                    @if($user->first()->dh_staff) (<span id="checkedMakeDhUser{{ $user->first()->id }}Count">0</span>) @endif
+                                </td>
                             @endforeach
                         </tr>
                         </tbody>
@@ -179,6 +182,30 @@
         // チェックボックスの状態が変わったときに関数を呼び出す
         checkboxForm.addEventListener('change', updateCheckedUserCount);
         updateCheckedUserCount();
+
+    </script>
+
+    <script>
+        // チェックボックスのフォーム要素を取得
+        const makeDhCheckboxForm = document.getElementById('checkboxForm');
+        // Option 1 のチェックされている数を表示する要素を取得
+        @foreach($requestedUsers as $user)
+            @continue(!$user->first()->dh_staff)
+            const checkedMakeDhUser{{ $user->first()->id }}CountDisplay = document.getElementById('checkedMakeDhUser{{ $user->first()->id }}Count');
+        @endforeach
+        // チェックボックスが変更されるたびにカウントを更新する関数
+        function updateCheckedMakeDhUserCount() {
+            // フォーム内のすべてのOption 1のチェックボックスを取得
+            @foreach($requestedUsers as $user)
+                @continue(!$user->first()->dh_staff)
+                const user{{ $user->first()->id }}Checkboxes = makeDhCheckboxForm.querySelectorAll('.sub-checkbox[data-option="{{ $user->first()->id }}"]');
+                // チェックされたOption 1の数を表示
+                checkedMakeDhUser{{ $user->first()->id }}CountDisplay.textContent = Array.from(user{{ $user->first()->id }}Checkboxes).filter(checkbox => checkbox.checked).length.toString();
+            @endforeach
+        }
+        // チェックボックスの状態が変わったときに関数を呼び出す
+        makeDhCheckboxForm.addEventListener('change', updateCheckedMakeDhUserCount);
+        updateCheckedMakeDhUserCount();
 
     </script>
 

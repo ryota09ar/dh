@@ -27,4 +27,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(RequestCount::class);
     }
+
+    public function decideShift()
+    {
+        return $this->hasMany(DecideShift::class);
+    }
 }

@@ -6,6 +6,7 @@ use App\Models\ConfirmedYearMonth;
 use App\Models\DecideShift;
 use App\Models\ExpiredYearMonth;
 use App\Models\LookForShift;
+use App\Models\RequestCount;
 use App\Models\RequestShift;
 use App\Models\ShiftContent;
 use App\Models\User;
@@ -22,7 +23,8 @@ class ShiftAdminController extends Controller
 {
     public function show(){
         DecideShift::where("date", "<", now()->subyear())->delete();
-        RequestShift::where("date", "<", now()->submonth())->delete();
+        RequestShift::where("date", "<", now()->submonth(2))->delete();
+        RequestCount::where("created_at", "<", now()->submonth(2))->delete();
         LookForShift::where("date", "<", now()->submonth(2))->delete();
         ConfirmedYearMonth::where("created_at", "<", now()->submonth())->delete();
         ExpiredYearMonth::where("created_at", "<", now()->submonth())->delete();
@@ -206,7 +208,13 @@ class ShiftAdminController extends Controller
     public function lookForConfirmation(Request $request)
     {
         if (ConfirmedYearMonth::is_confirmed($request["year"], $request["month"])) {
-            return redirect()->back()->withErrors(["yearMonth"=>"すでに募集が確定しています"]);
+            if (RequestShift::whereYear("date", $request["year"])->whereMonth("date", $request["month"])->exists()) {
+                return redirect()->back()->withErrors(["yearMonth"=>"すでに募集が確定しています"]);
+            } else {
+                ConfirmedYearMonth::where("year", $request["year"])->where("month", $request["month"])->delete();
+                return redirect()->back();
+            }
+
         }
         if (!LookForShift::whereYear("date", $request["year"])->whereMonth("date", $request["month"])->exists()) {
             return redirect()->back()->withErrors(["yearMonth"=>"どこか募集してください"]);
