@@ -187,14 +187,19 @@ class ShiftAdminController extends Controller
                 $k=$lookForShiftsLoaded[$i][$j];
                 if ($k!=0){
                     $shiftContent=ShiftContent::find($k);
-                    $sheet->setCellValue($column++.($i+3), "【".$shiftContent->place.$shiftContent->time."】");
+                    $shiftPlaceChar = "【".$shiftContent->place.$shiftContent->time."】";
+                    $sheet->setCellValue($column.($i+3), $shiftPlaceChar);
+                    if (mb_strlen($shiftPlaceChar) > 13){
+                        $sheet->getStyle($column++.($i+3))->getFont()->setSize(7.5);
+                    } else {
+                        $sheet->getStyle($column++.($i+3))->getFont()->setSize(9);
+                    }
                 } else {
                     break;
                 }
 
             }
         }
-        $sheet->getStyle('D4:G34')->getFont()->setSize(9);
         $sheet->getStyle('B4:G34')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('B4:G34')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
@@ -271,7 +276,8 @@ class ShiftAdminController extends Controller
             return redirect()->back()->withErrors(["yearMonth"=>"先にシフト募集を確定させてください"]);
         }
         if (ExpiredYearMonth::is_expired($request["year"], $request["month"])) {
-            return redirect()->back()->withErrors(["yearMonth"=>"すでに締め切られてます"]);
+            ExpiredYearMonth::where("year", $request["year"])->where("month", $request["month"])->delete();
+            return redirect()->back();
         }
         if (!RequestShift::existsYearMonth($request["year"], $request["month"])) {
             return redirect()->back()->withErrors(["yearMonth"=>"募集している人がいません"]);
@@ -280,7 +286,7 @@ class ShiftAdminController extends Controller
             "year"=>$request['year'],
             "month"=>$request['month'],
         ]);
-        return redirect()->route("admin.menu");
+        return redirect()->back();
     }
 
     //decided shift index
