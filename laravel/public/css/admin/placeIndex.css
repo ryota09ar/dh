@@ -11,6 +11,8 @@ main{
 }
 
 .button-51 {
+    display: flex;
+    align-items: center;
     justify-content: center;
     position: relative;
     width: 200px;

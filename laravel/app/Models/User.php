@@ -17,6 +17,9 @@ class User extends Authenticatable
         'email',
         "password"
     ];
+    /**
+     * @var mixed
+     */
 
     public function requestShift()
     {
@@ -31,5 +34,12 @@ class User extends Authenticatable
     public function decideShift()
     {
         return $this->hasMany(DecideShift::class);
+    }
+    public function return_name(){
+        if (self::where('family_name', $this->family_name)->select('family_name')->groupBy('family_name')->havingRaw('COUNT(*) >= 2')->exists()) {
+            return $this->family_name.mb_substr($this->first_name, 0, 1, "UTF-8");
+        } else{
+            return $this->family_name;
+        }
     }
 }

@@ -1,7 +1,4 @@
-@php
-    use App\Services\UserService;
-@endphp
-    <!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -61,7 +58,7 @@
                                     {{ ($place=\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->place).($time=\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->time)}}
                                     @foreach($decidedShifts as $decidedShift)
                                         @if($decidedShift->place==$place && $decidedShift->time==$time && $decidedShift->date==\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->date)
-                                            {{ UserService::return_name($decidedShift->user_id) }}
+                                            {{ \App\Models\User::find($decidedShift->user_id)->return_name() }}@if($decidedShift->makeDhByOneself)⚪︎@endif
                                         @endif
                                     @endforeach
                                 </td>

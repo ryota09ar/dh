@@ -1,5 +1,4 @@
 @php
-    use App\Services\UserService;
     $checkboxCounter=0;
 @endphp
 <!doctype html>
@@ -106,11 +105,11 @@
 
                                                 <label>
                                                     @if($requestShift->user->dh_staff)
-                                                        <input type="checkbox" class="mainCheckbox" name="decideShifts_{{ $i }}[]" data-option="{{ $requestShift->user_id }}"  value={{ $requestShift->id }}  {{ ($k) ? "checked":"" }}>{{UserService::return_name($requestShift->user_id)}}
+                                                        <input type="checkbox" class="mainCheckbox" name="decideShifts_{{ $i }}[]" data-option="{{ $requestShift->user_id }}"  value={{ $requestShift->id }}  {{ ($k) ? "checked":"" }}>{{\App\Models\User::find($requestShift->user_id)->return_name()}}
                                                         <input type="checkbox" class="sub-checkbox" data-option="{{ $requestShift->user_id }}" disabled {{ $makeDh ? "checked":"" }}>
                                                         <input type="hidden" class="submitValue" name="makeDhByOneself_{{ $i }}[]" value=0 disabled>
                                                     @else
-                                                        <input type="checkbox" class="mainCheckbox" name="decideShifts_{{ $i }}[]" data-option="{{ $requestShift->user_id }}"  value={{ $requestShift->id }}  {{ ($k) ? "checked":"" }}>{{UserService::return_name($requestShift->user_id)}}
+                                                        <input type="checkbox" class="mainCheckbox" name="decideShifts_{{ $i }}[]" data-option="{{ $requestShift->user_id }}"  value={{ $requestShift->id }}  {{ ($k) ? "checked":"" }}>{{\App\Models\User::find($requestShift->user_id)->return_name()}}
                                                         <input type="hidden" class="submitValue" name="makeDhByOneself_{{ $i }}[]" value=0 disabled>
                                                     @endif
                                                 </label>
@@ -128,7 +127,7 @@
                         <tr>
                             <th></th>
                             @foreach($requestedUsers as $user)
-                                <th>{{ UserService::return_name($user->first()->id) }}</th>
+                                <th>{{ $user->first()->return_name() }}</th>
                             @endforeach
                         </tr>
                         </thead>

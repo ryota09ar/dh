@@ -10,7 +10,6 @@ use App\Models\RequestCount;
 use App\Models\RequestShift;
 use App\Models\ShiftContent;
 use App\Models\User;
-use App\Services\UserService;
 use DateTime;
 use Exception;
 use Illuminate\Http\Request;
@@ -335,7 +334,7 @@ class ShiftAdminController extends Controller
                     $cellValue="【".$place.$time."】";
                     foreach ($decidedShifts as $decidedShift){
                         if($decidedShift->place==$place && $decidedShift->time==$time && $decidedShift->date==\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->date){
-                            $cellValue.=" ".UserService::return_name($decidedShift->user_id);
+                            $cellValue.=" ".User::find($decidedShift->user_id)->return_name();
                             if ($decidedShift->makeDhByOneself){
                                 $cellValue.="○";
                             }
