@@ -343,7 +343,7 @@ class ShiftAdminController extends Controller
                     $sheet->setCellValue($column.($i+3), $cellValue);
                     if (mb_strlen($cellValue)>23) {
                         $sheet->getStyle($column++.($i+3))->getFont()->setSize(5);
-                    } else if (mb_strlen($cellValue)>22) {
+                    } else if (mb_strlen($cellValue)>20) {
                         $sheet->getStyle($column++.($i+3))->getFont()->setSize(5.5);
                     } else if(mb_strlen($cellValue)>19){
                         $sheet->getStyle($column++.($i+3))->getFont()->setSize(6);
