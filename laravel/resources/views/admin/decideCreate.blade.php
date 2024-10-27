@@ -60,11 +60,6 @@
                     <button class="expire_button">{{ (\App\Models\ExpiredYearMonth::is_expired($year, $month) ? "締切済":"締切") }}</button>
                 </form>
             </div>
-            @if ($errors->has('yearMonth'))
-                <div class="alert alert-danger">
-                    {{ $errors->first('yearMonth') }}
-                </div>
-            @endif
             <div class="decideShift">
                 <form action="{{ route("shiftDecide.store") }}" method="post" id="checkboxForm">
                     @csrf
@@ -73,6 +68,10 @@
                     @php
                         $decideShifts = App\Models\DecideShift::whereYear('date',$year)->whereMonth('date',$month)->get();
                     @endphp
+                    @if(!\App\Models\ExpiredYearMonth::is_expired($year, $month))
+                        <p class="requireExpiration">編集をするには募集を締め切ってください</p>
+                    @endif
+
                     <h3>{{ $year }}年 {{ $month }}月</h3>
                     <table class="decideTable">
                     @for($i=1;$i<=$countOfDate;$i++)
@@ -105,11 +104,11 @@
 
                                                 <label>
                                                     @if($requestShift->user->dh_staff)
-                                                        <input type="checkbox" class="mainCheckbox" name="decideShifts_{{ $i }}[]" data-option="{{ $requestShift->user_id }}"  value={{ $requestShift->id }}  {{ ($k) ? "checked":"" }}>{{\App\Models\User::find($requestShift->user_id)->return_name()}}
+                                                        <input type="checkbox" class="mainCheckbox" name="decideShifts_{{ $i }}[]" data-option="{{ $requestShift->user_id }}"  value={{ $requestShift->id }}  {{ ($k) ? "checked":"" }} {{ \App\Models\ExpiredYearMonth::is_expired($year, $month) ? "":"disabled" }}>{{\App\Models\User::find($requestShift->user_id)->return_name()}}
                                                         <input type="checkbox" class="sub-checkbox" data-option="{{ $requestShift->user_id }}" disabled {{ $makeDh ? "checked":"" }}>
                                                         <input type="hidden" class="submitValue" name="makeDhByOneself_{{ $i }}[]" value=0 disabled>
                                                     @else
-                                                        <input type="checkbox" class="mainCheckbox" name="decideShifts_{{ $i }}[]" data-option="{{ $requestShift->user_id }}"  value={{ $requestShift->id }}  {{ ($k) ? "checked":"" }}>{{\App\Models\User::find($requestShift->user_id)->return_name()}}
+                                                        <input type="checkbox" class="mainCheckbox" name="decideShifts_{{ $i }}[]" data-option="{{ $requestShift->user_id }}"  value={{ $requestShift->id }}  {{ ($k) ? "checked":"" }} {{ \App\Models\ExpiredYearMonth::is_expired($year, $month) ? "":"disabled" }}>{{\App\Models\User::find($requestShift->user_id)->return_name()}}
                                                         <input type="hidden" class="submitValue" name="makeDhByOneself_{{ $i }}[]" value=0 disabled>
                                                     @endif
                                                 </label>

@@ -21,7 +21,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 class ShiftAdminController extends Controller
 {
     public function show(){
-        DecideShift::where("date", "<", now()->subyear())->delete();
+        DecideShift::where("date", "<", now()->subyear()->submonth(2))->delete();
         RequestShift::where("date", "<", now()->submonth(2))->delete();
         RequestCount::where("created_at", "<", now()->submonth(2))->delete();
         LookForShift::where("date", "<", now()->submonth(2))->delete();
@@ -186,7 +186,7 @@ class ShiftAdminController extends Controller
                 $k=$lookForShiftsLoaded[$i][$j];
                 if ($k!=0){
                     $shiftContent=ShiftContent::find($k);
-                    $shiftPlaceChar = "【".$shiftContent->place.$shiftContent->time."】";
+                    $shiftPlaceChar = "【".$shiftContent->place." ".preg_replace('/^0/', '', $shiftContent->time)."】";
                     $sheet->setCellValue($column.($i+3), $shiftPlaceChar);
                     if (mb_strlen($shiftPlaceChar) > 13){
                         $sheet->getStyle($column++.($i+3))->getFont()->setSize(7.5);
@@ -331,22 +331,24 @@ class ShiftAdminController extends Controller
                 if ($k!=0){
                     $place=LookForShift::find($k)->shiftContent->place;
                     $time=LookForShift::find($k)->shiftContent->time;
-                    $cellValue="【".$place.$time."】";
+                    $cellValue="【".$place." ".preg_replace('/^0/', '', $time)."】";
                     foreach ($decidedShifts as $decidedShift){
                         if($decidedShift->place==$place && $decidedShift->time==$time && $decidedShift->date==\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->date){
                             $cellValue.=" ".User::find($decidedShift->user_id)->return_name();
                             if ($decidedShift->makeDhByOneself){
-                                $cellValue.="○";
+                                $cellValue.="〇";
                             }
                         }
                     }
                     $sheet->setCellValue($column.($i+3), $cellValue);
-                    if(mb_strlen($cellValue)>23){
+                    if (mb_strlen($cellValue)>23) {
                         $sheet->getStyle($column++.($i+3))->getFont()->setSize(5);
-                    } else if(mb_strlen($cellValue)>19){
+                    } else if (mb_strlen($cellValue)>22) {
                         $sheet->getStyle($column++.($i+3))->getFont()->setSize(5.5);
-                    } else{
+                    } else if(mb_strlen($cellValue)>19){
                         $sheet->getStyle($column++.($i+3))->getFont()->setSize(6);
+                    } else{
+                        $sheet->getStyle($column++.($i+3))->getFont()->setSize(6.5);
                     }
 
                 } else {

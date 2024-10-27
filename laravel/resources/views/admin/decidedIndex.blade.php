@@ -55,7 +55,8 @@
                             @for($j=0;$j<4;$j++)
                                 @if($lookForShiftIdsLoaded[$i][$j]!=0)
                                     <td>
-                                        {{ ($place=\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->place).($time=\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->time)}}
+                                        @php $time=\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->time @endphp
+                                        {{ "【".($place=\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->place)." ".preg_replace('/^0/', '', $time)."】"}}
                                         @foreach($decidedShifts as $decidedShift)
                                             @if($decidedShift->place==$place && $decidedShift->time==$time && $decidedShift->date==\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->date)
                                                 {{ \App\Models\User::find($decidedShift->user_id)->return_name() }}@if($decidedShift->makeDhByOneself)⚪︎@endif
