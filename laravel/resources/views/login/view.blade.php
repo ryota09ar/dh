@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{{ asset("/css/header.css") }}?v={{ time() }}">
     <link rel="stylesheet" href="{{ asset("/css/login/view.css") }}?v={{ time() }}">
-    <title>login</title>
+    <title>manavisdh</title>
 </head>
 <body>
     <header>
@@ -28,12 +28,12 @@
                 @if($errors->has("email"))
                     <p class="alert alert-danger">{{ $errors->first("email") }}</p>
                 @endif
-                <input id="email" name="email" type="email">
+                <input id="email" name="email" type="email" required>
                 <label for="password">パスワード</label>
                 @if($errors->has("password"))
                     <p class="alert alert-danger">{{ $errors->first("password") }}</p>
                 @endif
-                <input id="password" name="password" type="password">
+                <input id="password" name="password" type="password" required>
                 <button>ログイン</button>
             </form>
             <a href="{{route("user.create")}}">新規登録</a>

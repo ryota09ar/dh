@@ -1,5 +1,5 @@
 @php
-    use App\Services\UserService;
+    $checkboxCounter=0;
 @endphp
 <!doctype html>
 <html lang="en">
@@ -60,11 +60,6 @@
                     <button class="expire_button">{{ (\App\Models\ExpiredYearMonth::is_expired($year, $month) ? "締切済":"締切") }}</button>
                 </form>
             </div>
-            @if ($errors->has('yearMonth'))
-                <div class="alert alert-danger">
-                    {{ $errors->first('yearMonth') }}
-                </div>
-            @endif
             <div class="decideShift">
                 <form action="{{ route("shiftDecide.store") }}" method="post" id="checkboxForm">
                     @csrf
@@ -73,7 +68,11 @@
                     @php
                         $decideShifts = App\Models\DecideShift::whereYear('date',$year)->whereMonth('date',$month)->get();
                     @endphp
-                    <label for="shift"></label>
+                    @if(!\App\Models\ExpiredYearMonth::is_expired($year, $month))
+                        <p class="requireExpiration">編集をするには募集を締め切ってください</p>
+                    @endif
+
+                    <h3>{{ $year }}年 {{ $month }}月</h3>
                     <table class="decideTable">
                     @for($i=1;$i<=$countOfDate;$i++)
                         <tr>
@@ -90,16 +89,28 @@
                                             @if($lookForShiftIdsLoaded[$i][$j]==$requestShift->look_for_shift_id)
                                                 @php
                                                     $k=false;
+                                                    $makeDh=false;
                                                     foreach ($decideShifts as $decideShift){
                                                         if ($decideShift->user_id==$requestShift->user_id && $decideShift->date==$requestShift->date
                                                             && $decideShift->place==$requestShift->lookForShift->shiftContent->place && $decideShift->time==$requestShift->lookForShift->shiftContent->time){
                                                             $k=true;
+                                                            if ($decideShift->makeDhByOneself==1){
+                                                                $makeDh=true;
+                                                            }
                                                             break;
                                                         }
                                                     }
                                                 @endphp
+
                                                 <label>
-                                                    <input id="shift" type="checkbox" class="checkbox" name="decideShifts_{{ $i }}[]" data-option="{{ $requestShift->user_id }}"  value={{ $requestShift->id }}  {{ ($k) ? "checked":"" }}>{{UserService::return_name($requestShift->user_id)}}
+                                                    @if($requestShift->user->dh_staff)
+                                                        <input type="checkbox" class="mainCheckbox" name="decideShifts_{{ $i }}[]" data-option="{{ $requestShift->user_id }}"  value={{ $requestShift->id }}  {{ ($k) ? "checked":"" }} {{ \App\Models\ExpiredYearMonth::is_expired($year, $month) ? "":"disabled" }}>{{\App\Models\User::find($requestShift->user_id)->return_name()}}
+                                                        <input type="checkbox" class="sub-checkbox" data-option="{{ $requestShift->user_id }}" disabled {{ $makeDh ? "checked":"" }}>
+                                                        <input type="hidden" class="submitValue" name="makeDhByOneself_{{ $i }}[]" value=0 disabled>
+                                                    @else
+                                                        <input type="checkbox" class="mainCheckbox" name="decideShifts_{{ $i }}[]" data-option="{{ $requestShift->user_id }}"  value={{ $requestShift->id }}  {{ ($k) ? "checked":"" }} {{ \App\Models\ExpiredYearMonth::is_expired($year, $month) ? "":"disabled" }}>{{\App\Models\User::find($requestShift->user_id)->return_name()}}
+                                                        <input type="hidden" class="submitValue" name="makeDhByOneself_{{ $i }}[]" value=0 disabled>
+                                                    @endif
                                                 </label>
                                             @endif
                                         @endforeach
@@ -115,7 +126,7 @@
                         <tr>
                             <th></th>
                             @foreach($requestedUsers as $user)
-                                <th>{{ UserService::return_name($user->first()->id) }}</th>
+                                <th>{{ $user->first()->return_name() }}</th>
                             @endforeach
                         </tr>
                         </thead>
@@ -123,13 +134,22 @@
                         <tr>
                             <th>提出数</th>
                             @foreach($requestedUsers as $user)
-                                <th>{{ \App\Models\RequestShift::whereYear('date',$year)->whereMonth('date',$month)->where("user_id", $user->first()->id)->count() }}</th>
+                                <td>{{ $user->first()->requestShift()->whereYear("date", $year)->whereMonth("date", $month)->count() }}</td>
+                            @endforeach
+                        </tr>
+                        <tr>
+                            <th>希望数</th>
+                            @foreach($requestedUsers as $user)
+                                <td>{{ $user->first()->requestCount()->where("year", $year)->where("month", $month)->first()->request_count }}</td>
                             @endforeach
                         </tr>
                         <tr>
                             <th>実施数</th>
                             @foreach($requestedUsers as $user)
-                                <th><span id="checkedUser{{ $user->first()->id }}Count">0</span></th>
+                                <td>
+                                    <span id="checkedUser{{ $user->first()->id }}Count">0</span>
+                                    @if($user->first()->dh_staff) (<span id="checkedMakeDhUser{{ $user->first()->id }}Count">0</span>) @endif
+                                </td>
                             @endforeach
                         </tr>
                         </tbody>
@@ -152,7 +172,7 @@
         function updateCheckedUserCount() {
             // フォーム内のすべてのOption 1のチェックボックスを取得
             @foreach($requestedUsers as $user)
-                const user{{ $user->first()->id }}Checkboxes = checkboxForm.querySelectorAll('.checkbox[data-option="{{ $user->first()->id }}"]');
+                const user{{ $user->first()->id }}Checkboxes = checkboxForm.querySelectorAll('.mainCheckbox[data-option="{{ $user->first()->id }}"]');
                 // チェックされたOption 1の数を表示
                 checkedUser{{ $user->first()->id }}CountDisplay.textContent = Array.from(user{{ $user->first()->id }}Checkboxes).filter(checkbox => checkbox.checked).length.toString();
             @endforeach
@@ -160,6 +180,30 @@
         // チェックボックスの状態が変わったときに関数を呼び出す
         checkboxForm.addEventListener('change', updateCheckedUserCount);
         updateCheckedUserCount();
+
+    </script>
+
+    <script>
+        // チェックボックスのフォーム要素を取得
+        const makeDhCheckboxForm = document.getElementById('checkboxForm');
+        // Option 1 のチェックされている数を表示する要素を取得
+        @foreach($requestedUsers as $user)
+            @continue(!$user->first()->dh_staff)
+            const checkedMakeDhUser{{ $user->first()->id }}CountDisplay = document.getElementById('checkedMakeDhUser{{ $user->first()->id }}Count');
+        @endforeach
+        // チェックボックスが変更されるたびにカウントを更新する関数
+        function updateCheckedMakeDhUserCount() {
+            // フォーム内のすべてのOption 1のチェックボックスを取得
+            @foreach($requestedUsers as $user)
+                @continue(!$user->first()->dh_staff)
+                const user{{ $user->first()->id }}Checkboxes = makeDhCheckboxForm.querySelectorAll('.sub-checkbox[data-option="{{ $user->first()->id }}"]');
+                // チェックされたOption 1の数を表示
+                checkedMakeDhUser{{ $user->first()->id }}CountDisplay.textContent = Array.from(user{{ $user->first()->id }}Checkboxes).filter(checkbox => checkbox.checked).length.toString();
+            @endforeach
+        }
+        // チェックボックスの状態が変わったときに関数を呼び出す
+        makeDhCheckboxForm.addEventListener('change', updateCheckedMakeDhUserCount);
+        updateCheckedMakeDhUserCount();
 
     </script>
 
@@ -187,6 +231,75 @@
             });
         });
     </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // メインチェックボックスをすべて取得
+            var mainCheckboxes = document.querySelectorAll('.mainCheckbox');
+
+            // 各メインチェックボックスにイベントリスナーを追加
+            mainCheckboxes.forEach(function(mainCheckbox, index) {
+                var subCheckbox = mainCheckbox.parentNode.querySelector('.sub-checkbox');
+                if (subCheckbox != null){
+                    if (mainCheckbox.checked) {
+                        subCheckbox.disabled = false;
+                    }
+                    // メインチェックボックスの状態に応じてサブチェックボックスの有効・無効を切り替える
+                    mainCheckbox.addEventListener('change', function() {
+                        if (mainCheckbox.checked) {
+                            subCheckbox.disabled = false;
+                        } else {
+                            subCheckbox.disabled = true;
+                            subCheckbox.checked = false; // メインが未選択の場合、サブも未選択にする
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // メインチェックボックスをすべて取得
+            var mainCheckboxes = document.querySelectorAll('.mainCheckbox');
+
+            // 各メインチェックボックスにイベントリスナーを追加
+            mainCheckboxes.forEach(function(mainCheckbox, index) {
+                var submitValue = mainCheckbox.closest('label').querySelector('.submitValue');
+                if (submitValue != null){
+                    if (mainCheckbox.checked) {
+                        submitValue.disabled = false;
+                    }
+                    // メインチェックボックスの状態に応じてサブチェックボックスの有効・無効を切り替える
+                    mainCheckbox.addEventListener('change', function() {
+                        submitValue.disabled = !mainCheckbox.checked;
+                    });
+                }
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        // チェックボックスをすべて取得
+            var subCheckboxes = document.querySelectorAll('.sub-checkbox');
+
+            // 各チェックボックスにイベントリスナーを追加
+            subCheckboxes.forEach(function(subCheckbox, index) {
+                var submitValue = subCheckbox.closest('label').querySelector('.submitValue');
+                    // ページ読み込み時に初期状態を確認して value を設定
+                if (subCheckbox.checked) {
+                    submitValue.value = "1";
+                }
+                subCheckbox.addEventListener('change', function() {
+                    if (subCheckbox.checked) {
+                        submitValue.value = "1"; // チェックされているときは value を 1 に
+                    } else {
+                        submitValue.value = "0"; // チェックが外れたときは value を 0 に
+                    }
+                });
+            });
+        });
+    </script>
+
 
 </body>
 </html>

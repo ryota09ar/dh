@@ -17,6 +17,7 @@ return new class extends Migration
             $table->date('date');
             $table->string("place");
             $table->char("time", 5);
+            $table->tinyInteger("makeDhByOneself");
             $table->timestamps();
         });
     }

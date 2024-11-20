@@ -17,6 +17,7 @@ class UsersTableSeeder extends Seeder
         DB::table('users')->insert([
             "family_name"=>"荒木",
             "first_name"=>"亮太",
+            "dh_staff"=>1,
             "email"=>"a@a",
             "password"=>Hash::make("a"),
         ]);
@@ -24,6 +25,7 @@ class UsersTableSeeder extends Seeder
         DB::table('users')->insert([
             "family_name"=>"田中",
             "first_name"=>"太郎",
+            "dh_staff"=>0,
             "email"=>"b@b",
             "password"=>Hash::make("b"),
         ]);
@@ -31,6 +33,7 @@ class UsersTableSeeder extends Seeder
         DB::table('users')->insert([
             "family_name"=>"田中",
             "first_name"=>"亮太",
+            "dh_staff"=>1,
             "email"=>"c@c",
             "password"=>Hash::make("c"),
         ]);

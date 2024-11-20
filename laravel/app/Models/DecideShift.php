@@ -13,7 +13,8 @@ class DecideShift extends Model
         "user_id",
         "date",
         "place",
-        "time"
+        "time",
+        "makeDhByOneself"
     ];
 
     public function user()

@@ -7,6 +7,7 @@
 
 .decideShift form{
     display: flex;
+    width: 90%;
     flex-direction: column;
     justify-content: center;
     margin:0 auto;
@@ -22,7 +23,7 @@
 .countTable{
     justify-content: center;
     border-collapse: collapse;
-    margin-top: 50px;
+    margin: 50px auto 0 auto;
 }
 
 th, td{
@@ -68,7 +69,7 @@ th{
 }
 
 .checkbox-3 label{
-    width: 110px;
+    width: 8em;
 }
 
 .checkbox-3 label:has(:checked)::after {
@@ -80,6 +81,7 @@ th{
     justify-content: center;
     align-items: center;
     width: 80px;
+    height: 40px;
     margin: 0 auto;
     padding: .6em 0;
     border: 1px solid #15a2bc;

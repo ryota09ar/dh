@@ -24,6 +24,7 @@ class CreateUserRequest extends FormRequest
         return [
             "family_name" => "required",
             "first_name" => "required",
+            "dh_staff" => "required",
             "email" => "required|unique:users",
             "password" => "required|unique:users",
         ];
@@ -33,6 +34,7 @@ class CreateUserRequest extends FormRequest
         return [
             "family_name.required"=>"名前を入力してください",
             "first_name.required"=>"名前を入力してください",
+            "dh_staff"=>"自身の区分を入力してください",
             "email.required"=>"メールを入力してください",
             "email.unique"=>"すでに存在するメールアドレスです",
             "password.required"=>"パスワードを入力してください",

@@ -67,6 +67,7 @@
                     <input type="hidden" name="year" value={{ $year }}>
                     <input type="hidden" name="month" value={{ $month }}>
 
+                    <h3>{{ $year }}年 {{ $month }}月</h3>
                     <table class="lookForTable">
                     @for($i=1;$i<=$countOfDate;$i++)
                         <tr>

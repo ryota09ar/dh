@@ -6,6 +6,7 @@ use App\Models\ConfirmedYearMonth;
 use App\Models\DecideShift;
 use App\Models\ExpiredYearMonth;
 use App\Models\LookForShift;
+use App\Models\RequestCount;
 use App\Models\RequestShift;
 use DateTime;
 use Illuminate\Http\Request;
@@ -81,6 +82,14 @@ class ShiftController extends Controller
                 "look_for_shift_id"=>$lookForShiftId,
             ]);
         }
+
+        RequestCount::where("user_id", Auth::id())->where("year", $request["year"])->where("month", $request["month"])->delete();
+        RequestCount::create([
+            "user_id"=>Auth::id(),
+            "request_count"=>$request["requestCount"],
+            "year"=>$request["year"],
+            "month"=>$request["month"],
+        ]);
 
         return redirect()->route("user.home");
     }

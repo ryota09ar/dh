@@ -1,7 +1,4 @@
-@php
-    use App\Services\UserService;
-@endphp
-    <!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -50,6 +47,7 @@
         </div>
 
         <div class="decidedIndex">
+            <h3>{{ $year }}年 {{ $month }}月</h3>
             <table class="decidedTable">
                 @for($i=1;$i<=$countOfDate; $i++)
                     <tr>
@@ -57,10 +55,11 @@
                         @for($j=0;$j<4;$j++)
                             @if($lookForShiftIdsLoaded[$i][$j]!=0)
                                 <td>
-                                    {{ ($place=\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->place).($time=\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->time)}}
+                                    @php $time=\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->time @endphp
+                                    {{ "【".($place=\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->shiftContent->place)." ".preg_replace('/^0/', '', $time)."】"}}
                                     @foreach($decidedShifts as $decidedShift)
                                         @if($decidedShift->place==$place && $decidedShift->time==$time && $decidedShift->date==\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->date)
-                                            {{ UserService::return_name($decidedShift->user_id) }}
+                                            {{ \App\Models\User::find($decidedShift->user_id)->return_name() }}@if($decidedShift->makeDhByOneself)⚪︎@endif
                                         @endif
                                     @endforeach
                                 </td>

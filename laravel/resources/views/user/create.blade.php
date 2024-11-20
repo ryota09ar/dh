@@ -28,18 +28,26 @@
                 @elseif($errors->has("family_name") && $errors->has("first_name"))
                     <p class="alert alert-danger">{{ $errors->first("family_name") }}</p>
                 @endif
-                姓<input id="name" name="family_name" type="text">
-                名<input id="name" name="first_name" type="text">
+                姓<input id="name" name="family_name" type="text" required>
+                名<input id="name" name="first_name" type="text" required>
+                <label>
+                    <input type="radio" name="dh_staff" value=0 required>
+                    AA
+                </label>
+                <label>
+                    <input type="radio" name="dh_staff" value=1 required>
+                    dhスタッフ
+                </label>
                 <label for="email">メールアドレス</label>
                 @if($errors->has("email"))
                     <p class="alert alert-danger">{{ $errors->first("email") }}</p>
                 @endif
-                <input id="email" name="email" type="email">
+                <input id="email" name="email" type="email" required>
                 <label for="password">パスワード</label>
                 @if($errors->has("password"))
                     <p class="alert alert-danger">{{ $errors->first("password") }}</p>
                 @endif
-                <input id="password" name="password" type="password">
+                <input id="password" name="password" type="password" required>
                 <button>登録</button>
             </form>
         </div>

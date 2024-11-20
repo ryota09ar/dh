@@ -59,6 +59,7 @@
                     <label for="shift">シフト選択</label>
                     <input type="hidden" name="year" value={{$year}}>
                     <input type="hidden" name="month" value={{$month}}>
+                    <h3>{{ $year }}年 {{ $month }}月</h3>
                     <table class="requestTable">
                     @for($k=1;$k<=$countOfDate;$k++)
                         <tr>
@@ -70,7 +71,7 @@
                                     <td>
                                         <fieldset class="checkbox-3">
                                             <label>
-                                                <input id="shift" type="checkbox" name="lookForShiftIds[]" value={{ $lookForShiftId }} {{ in_array($lookForShiftId, $requestShiftsId) ? 'checked' : '' }}>{{\App\Models\LookForShift::find($lookForShiftId)->shiftContent->place.\App\Models\LookForShift::find($lookForShiftId)->shiftContent->time}}
+                                                <input id="shift" class="checkbox" type="checkbox" name="lookForShiftIds[]" value={{ $lookForShiftId }} {{ in_array($lookForShiftId, $requestShiftsId) ? 'checked' : '' }}>{{\App\Models\LookForShift::find($lookForShiftId)->shiftContent->place.\App\Models\LookForShift::find($lookForShiftId)->shiftContent->time}}
                                             </label>
                                         </fieldset>
                                     </td>
@@ -79,8 +80,10 @@
                         </tr>
                     @endfor
                     </table>
-                    <label id="requestCount">希望回数</label>
-                    <input id="requestCount" name="requestCount" type="number">
+                    <label>
+                        <span class="requestCount-label">希望回数</span>
+                        <input class="requestCount" name="requestCount" type="number" placeholder="希望なければ0を入れる" required {{ (\App\Models\RequestCount::where("user_id", \Illuminate\Support\Facades\Auth::id())->where("year", $year)->where("month", $month)->exists() ? "value=".\App\Models\RequestCount::where("user_id", \Illuminate\Support\Facades\Auth::id())->where("year", $year)->where("month", $month)->first()->request_count : "") }}>
+                    </label>
                     <button class="submit_button">提出</button>
                 </form>
             </div>

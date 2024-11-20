@@ -6,10 +6,10 @@ use App\Models\ConfirmedYearMonth;
 use App\Models\DecideShift;
 use App\Models\ExpiredYearMonth;
 use App\Models\LookForShift;
+use App\Models\RequestCount;
 use App\Models\RequestShift;
 use App\Models\ShiftContent;
 use App\Models\User;
-use App\Services\UserService;
 use DateTime;
 use Exception;
 use Illuminate\Http\Request;
@@ -21,8 +21,9 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 class ShiftAdminController extends Controller
 {
     public function show(){
-        DecideShift::where("date", "<", now()->subyear())->delete();
-        RequestShift::where("date", "<", now()->submonth())->delete();
+        DecideShift::where("date", "<", now()->subyear()->submonth(2))->delete();
+        RequestShift::where("date", "<", now()->submonth(2))->delete();
+        RequestCount::where("created_at", "<", now()->submonth(2))->delete();
         LookForShift::where("date", "<", now()->submonth(2))->delete();
         ConfirmedYearMonth::where("created_at", "<", now()->submonth())->delete();
         ExpiredYearMonth::where("created_at", "<", now()->submonth())->delete();
@@ -128,11 +129,8 @@ class ShiftAdminController extends Controller
         $year = $request['year'];
         $month = $request['month'];
         $shift_contents = ShiftContent::orderBy("place", "asc")->orderBy("time", "asc")->get();
-
         $countOfDate = $this->countOfDate($year, $month);
-
         $daysOfWeek = $this->daysOfWeek($year, $month, $countOfDate);
-
         $lookForShiftsLoaded = LookForShift::lookForShiftsLoaded($year, $month, $countOfDate);
 
         return view('admin.lookForCreate', compact('shift_contents', "year", "month", "lookForShiftsLoaded", "countOfDate", "daysOfWeek"));
@@ -188,14 +186,19 @@ class ShiftAdminController extends Controller
                 $k=$lookForShiftsLoaded[$i][$j];
                 if ($k!=0){
                     $shiftContent=ShiftContent::find($k);
-                    $sheet->setCellValue($column++.($i+3), "【".$shiftContent->place.$shiftContent->time."】");
+                    $shiftPlaceChar = "【".$shiftContent->place." ".preg_replace('/^0/', '', $shiftContent->time)."】";
+                    $sheet->setCellValue($column.($i+3), $shiftPlaceChar);
+                    if (mb_strlen($shiftPlaceChar) > 13){
+                        $sheet->getStyle($column++.($i+3))->getFont()->setSize(7.5);
+                    } else {
+                        $sheet->getStyle($column++.($i+3))->getFont()->setSize(9);
+                    }
                 } else {
                     break;
                 }
 
             }
         }
-        $sheet->getStyle('D4:G34')->getFont()->setSize(9);
         $sheet->getStyle('B4:G34')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('B4:G34')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
@@ -209,7 +212,13 @@ class ShiftAdminController extends Controller
     public function lookForConfirmation(Request $request)
     {
         if (ConfirmedYearMonth::is_confirmed($request["year"], $request["month"])) {
-            return redirect()->back()->withErrors(["yearMonth"=>"すでに募集が確定しています"]);
+            if (RequestShift::whereYear("date", $request["year"])->whereMonth("date", $request["month"])->exists()) {
+                return redirect()->back()->withErrors(["yearMonth"=>"すでに募集が確定しています"]);
+            } else {
+                ConfirmedYearMonth::where("year", $request["year"])->where("month", $request["month"])->delete();
+                return redirect()->back();
+            }
+
         }
         if (!LookForShift::whereYear("date", $request["year"])->whereMonth("date", $request["month"])->exists()) {
             return redirect()->back()->withErrors(["yearMonth"=>"どこか募集してください"]);
@@ -244,13 +253,16 @@ class ShiftAdminController extends Controller
         $countOfDate = $this->countOfDate($year, $month);
         DecideShift::whereYear("date", $year)->whereMonth("date", $month)->delete();
         for ($i=1;$i<=$countOfDate;$i++){
+            $index_number = 0;
+            $makeDhByOneself = $request->input("makeDhByOneself_$i", []);
             foreach($request->input("decideShifts_$i", []) as $decideShiftId){
-                $decideShift=RequestShift::find($decideShiftId);
+                $requestShift=RequestShift::find($decideShiftId);
                 DecideShift::create([
-                    "user_id" => $decideShift->user_id,
-                    "date" => $decideShift->date,
-                    "place" => $decideShift->lookForShift->shiftContent->place,
-                    "time" => $decideShift->lookForShift->shiftContent->time,
+                    "user_id" => $requestShift->user_id,
+                    "date" => $requestShift->date,
+                    "place" => $requestShift->lookForShift->shiftContent->place,
+                    "time" => $requestShift->lookForShift->shiftContent->time,
+                    "makeDhByOneself" => $makeDhByOneself[$index_number++],
                 ]);
             }
         }
@@ -263,7 +275,8 @@ class ShiftAdminController extends Controller
             return redirect()->back()->withErrors(["yearMonth"=>"先にシフト募集を確定させてください"]);
         }
         if (ExpiredYearMonth::is_expired($request["year"], $request["month"])) {
-            return redirect()->back()->withErrors(["yearMonth"=>"すでに締め切られてます"]);
+            ExpiredYearMonth::where("year", $request["year"])->where("month", $request["month"])->delete();
+            return redirect()->back();
         }
         if (!RequestShift::existsYearMonth($request["year"], $request["month"])) {
             return redirect()->back()->withErrors(["yearMonth"=>"募集している人がいません"]);
@@ -272,7 +285,7 @@ class ShiftAdminController extends Controller
             "year"=>$request['year'],
             "month"=>$request['month'],
         ]);
-        return redirect()->route("admin.menu");
+        return redirect()->back();
     }
 
     //decided shift index
@@ -318,17 +331,24 @@ class ShiftAdminController extends Controller
                 if ($k!=0){
                     $place=LookForShift::find($k)->shiftContent->place;
                     $time=LookForShift::find($k)->shiftContent->time;
-                    $cellValue="【".$place.$time."】";
+                    $cellValue="【".$place." ".preg_replace('/^0/', '', $time)."】";
                     foreach ($decidedShifts as $decidedShift){
                         if($decidedShift->place==$place && $decidedShift->time==$time && $decidedShift->date==\App\Models\LookForShift::find($lookForShiftIdsLoaded[$i][$j])->date){
-                            $cellValue.=" ".UserService::return_name($decidedShift->user_id);
+                            $cellValue.=" ".User::find($decidedShift->user_id)->return_name();
+                            if ($decidedShift->makeDhByOneself){
+                                $cellValue.="〇";
+                            }
                         }
                     }
                     $sheet->setCellValue($column.($i+3), $cellValue);
-                    if(mb_strlen($cellValue)>21){
+                    if (mb_strlen($cellValue)>23) {
                         $sheet->getStyle($column++.($i+3))->getFont()->setSize(5);
-                    } else{
+                    } else if (mb_strlen($cellValue)>20) {
+                        $sheet->getStyle($column++.($i+3))->getFont()->setSize(5.5);
+                    } else if(mb_strlen($cellValue)>19){
                         $sheet->getStyle($column++.($i+3))->getFont()->setSize(6);
+                    } else{
+                        $sheet->getStyle($column++.($i+3))->getFont()->setSize(6.5);
                     }
 
                 } else {
@@ -339,6 +359,7 @@ class ShiftAdminController extends Controller
         }
         $sheet->getStyle('B4:G34')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('B4:G34')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        $sheet->getStyle('B4:G34')->getFont()->setName('Arial Unicode MS');
 
         $newFileName = "decided_shift_{$year}_{$month}.xlsx";
         $writer = new Xlsx($spreadsheet);
