@@ -22,8 +22,8 @@
         <div class="container">
             <div class="menu">
                 <h2>{{ \Illuminate\Support\Facades\Auth::user()->family_name.\Illuminate\Support\Facades\Auth::user()->first_name }} さん</h2>
-                <a class="button" href="{{ route("shiftRequest.create", ['year' => (((int)date("n")==12) ? (int)date("Y")+1:(int)date("Y")), 'month' => (int)date("n")+1]) }}">シフト提出</a>
-                <a class="button" href="{{ route("decided.index", ['year' => (((int)date("n")==12) ? (int)date("Y")+1:(int)date("Y")), 'month' => (int)date("n")+1]) }}">シフト確認</a>
+                <a class="button" href="{{ route("shiftRequest.create", ['year' => (((int)date("n")==12) ? (int)date("Y")+1:(int)date("Y")), 'month' => (((int)date("n")==12) ? 1:(int)date("n")+1)]) }}">シフト提出</a>
+                <a class="button" href="{{ route("decided.index", ['year' => (((int)date("n")==12) ? (int)date("Y")+1:(int)date("Y")), 'month' => (((int)date("n")==12) ? 1:(int)date("n")+1)]) }}">シフト確認</a>
             </div>
         </div>
     </main>

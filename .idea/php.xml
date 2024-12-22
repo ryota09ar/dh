@@ -167,9 +167,23 @@
       <path value="$PROJECT_DIR$/laravel/vendor/league/flysystem" />
       <path value="$PROJECT_DIR$/laravel/vendor/phpoption/phpoption" />
       <path value="$PROJECT_DIR$/laravel/vendor/symfony/clock" />
+      <path value="$PROJECT_DIR$/vendor/nesbot/carbon 3" />
+      <path value="$PROJECT_DIR$/vendor/doctrine/inflector 3" />
+      <path value="$PROJECT_DIR$/vendor/jeremeamia/superclosure 3" />
+      <path value="$PROJECT_DIR$/vendor/psr/http-client 3" />
+      <path value="$PROJECT_DIR$/vendor/psr/http-factory 3" />
+      <path value="$PROJECT_DIR$/vendor/psr/simple-cache 3" />
+      <path value="$PROJECT_DIR$/vendor/psr/http-message 3" />
+      <path value="$PROJECT_DIR$/vendor/maatwebsite/excel 3" />
+      <path value="$PROJECT_DIR$/vendor/illuminate/contracts 2" />
+      <path value="$PROJECT_DIR$/vendor/illuminate/support 2" />
+      <path value="$PROJECT_DIR$/vendor/markbaker/matrix 3" />
+      <path value="$PROJECT_DIR$/vendor/markbaker/complex 3" />
     </include_path>
   </component>
-  <component name="PhpProjectSharedConfiguration" php_language_level="7.1" />
+  <component name="PhpProjectSharedConfiguration" php_language_level="7.1">
+    <option name="suggestChangeDefaultLanguageLevel" value="false" />
+  </component>
   <component name="PhpStanOptionsConfiguration">
     <option name="transferred" value="true" />
   </component>
